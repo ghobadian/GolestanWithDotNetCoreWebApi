@@ -6,57 +6,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using DataLayer.Contexts;
+using DataLayer.Models;
 
 namespace DataLayer.Services
 {
-    public class InstructorRepository : IInstructorRepository
+    public class InstructorRepository : AllInOneRepository<Instructor>
     {
-        public bool Delete(int id)
+        public InstructorRepository(LoliBase db) : base(db) { }
+
+        public override IEnumerable<Instructor> GetAll()
+        {
+            return db.Instructors;
+        }
+
+        public override Instructor GetById(int id)
+        {
+            return db.Instructors.Single(entity => entity.Id == id);
+        }
+
+        public override bool Insert(Instructor entity)
         {
             try
             {
-                db.Entry(GetById(id)).State = EntityState.Deleted;
+                db.Instructors.Add(entity);
                 return true;
             }
             catch (Exception)
             {
                 return false;
             }
-        }
-
-        public bool Delete(Instructor entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Instructor> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Instructor GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Insert(Instructor entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(Instructor entity)
-        {
-            throw new NotImplementedException();
         }
     }
 }

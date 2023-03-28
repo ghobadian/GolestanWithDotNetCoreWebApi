@@ -29,5 +29,10 @@ namespace DataLayer.Services
                 return false;
             }
         }
+
+        public bool ExistsByTitle(string title)
+        {
+            return db.Courses.Any(entity => entity.Title == title);
+        }
     }
 }

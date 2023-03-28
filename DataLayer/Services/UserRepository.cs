@@ -7,27 +7,30 @@ using System.Text;
 using System.Threading.Tasks;
 using DataLayer.Contexts;
 using Microsoft.EntityFrameworkCore;
+using DataLayer.Models;
+using System.Runtime.InteropServices;
 
 namespace DataLayer.Services
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : AllInOneRepository<User>
     {
-        LoliBase db;
-        public UserRepository(LoliBase db)
+        public UserRepository(LoliBase db) : base(db) { }
+
+        public override IEnumerable<User> GetAll()
         {
-            this.db = db;
+            return db.Users;
         }
 
-        public bool Delete(int id)
+        public override User GetById(int id)
         {
-            return Delete(GetById(id));
+            return db.Users.Single(entity => entity.Id == id);
         }
 
-        public bool Delete(User entity)
+        public override bool Insert(User entity)
         {
             try
             {
-                db.Entry(entity).State = EntityState.Deleted;
+                db.Users.Add(entity);
                 return true;
             }
             catch (Exception)
@@ -36,32 +39,19 @@ namespace DataLayer.Services
             }
         }
 
-        public void Dispose()
-        {
-            db.Dispose();
-        }
+        User FindByUsername(string username) => db.Users.Single(user => user.Username == username); 
 
-        public IEnumerable<User> GetAll() => db.Users.Select(user => user);
-        
+        User FindByStudentId(int studentId) => db.Users.Single(user => user.Student.Id == studentId);
 
-        public User GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public User FindByInstructorId(int instructorId) => db.Users.Single(user => user.Instructor.Id == instructorId);
+        public IEnumerable<User> FindByAdminTrue() => db.Users.Where(user => user.Admin);
 
-        public bool Insert(User entity)
-        {
-            throw new NotImplementedException();
-        }
+        public bool ExistsByInstructorId(int instructorId) => db.Users.Any(user => user.Instructor.Id == instructorId);
 
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
+        public bool ExistsByPhone(string phone) => db.Users.Any(user => user.Phone == phone);
 
-        public bool Update(User entity)
-        {
-            throw new NotImplementedException();
-        }
+        public bool ExistsByUsername(string username) => db.Users.Any(user => user.Username.Equals(username));
+
+        public bool ExistsByNationalId(string nationalId) => db.Users.Any(user => user.NationalId.Equals(nationalId));
     }
 }

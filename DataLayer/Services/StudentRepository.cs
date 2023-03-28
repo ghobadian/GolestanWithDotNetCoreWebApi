@@ -6,16 +6,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using DataLayer.Contexts;
 
 namespace DataLayer.Services
 {
-    public class StudentRepository : IStudentRepository
+    public class StudentRepository : AllInOneRepository<Student>
     {
-        public bool Delete(int id)
+        public StudentRepository(LoliBase db) : base(db) { }
+
+        public override IEnumerable<Student> GetAll()
+        {
+            return db.Students;
+        }
+
+        public override Student GetById(int id)
+        {
+            return db.Students.Single(entity => entity.Id == id);
+        }
+
+        public override bool Insert(Student entity)
         {
             try
             {
-                db.Entry(GetById(id)).State = EntityState.Deleted;
+                db.Students.Add(entity);
                 return true;
             }
             catch (Exception)
@@ -24,47 +37,7 @@ namespace DataLayer.Services
             }
         }
 
-        public bool Delete(Student entity)
-        {
-            try
-            {
-                db.Entry(entity).State = EntityState.Deleted;
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Student> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Student GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Insert(Student entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(Student entity)
-        {
-            throw new NotImplementedException();
-        }
+        public Student FindByUsername(string username) => 
+            db.Students.Single(entity => entity.User.Username == username);
     }
 }

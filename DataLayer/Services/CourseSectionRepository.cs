@@ -36,5 +36,17 @@ namespace DataLayer.Services
                 return false;
             }
         }
+
+        public IEnumerable<CourseSection> FindByTerm(Term term) => 
+            db.CourseSections.Where(entity => entity.Term == term);
+
+        public bool ExistsByIdAndTerm(int id, Term term) => 
+            db.CourseSections.Any(entity => entity.Id == id && entity.Term == term);
+
+        public IEnumerable<CourseSection> FindAllByTermAndInstructorUsernameAndCourseTitle(Term term, string username, string courseTitle) =>
+            db.CourseSections.Where(entity => entity.Term == term && entity.Instructor.User.Username == username && entity.Course.Title == courseTitle);
+        
+        public IEnumerable<CourseSection> FindByInstructorId(int instructorId) => 
+            db.CourseSections.Where(entity => entity.Instructor.Id == instructorId);
     }
 }

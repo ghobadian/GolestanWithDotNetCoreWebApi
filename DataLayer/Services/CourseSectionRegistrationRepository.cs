@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DataLayer.Contexts;
+using DataLayer.Models.Users;
 
 namespace DataLayer.Services
 {
@@ -36,5 +37,22 @@ namespace DataLayer.Services
                 return false;
             }
         }
+        
+        public CourseSectionRegistration FindByCourseSectionIdAndStudentId(int courseSectionId, int studentId)
+        {
+            return db.CourseSectionRegistrations.Single(csr => csr.CourseSection.Id == courseSectionId && csr.Student.Id == studentId);
+        }
+
+        public bool ExistsByCourseSectionIdAndStudentId(int courseSectionId, int studentId) => 
+            db.CourseSectionRegistrations
+            .Any(csr => csr.CourseSection.Id == courseSectionId && csr.Student.Id == studentId);
+
+        public IEnumerable<CourseSectionRegistration> FindByStudent(Student student) => 
+            db.CourseSectionRegistrations.Where(csr => csr.Student.Equals(student));
+
+        public int CountByCourseSectionId(int courseSectionId) => 
+            FindByCourseSectionId(courseSectionId).Count();
+        public IEnumerable<CourseSectionRegistration> FindByCourseSectionId(int courseSectionId) =>
+            db.CourseSectionRegistrations.Where(csr => csr.CourseSection.Id == courseSectionId);
     }
 }

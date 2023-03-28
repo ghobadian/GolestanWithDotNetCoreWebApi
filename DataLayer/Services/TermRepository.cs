@@ -6,21 +6,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using DataLayer.Contexts;
+using DataLayer.Models.Users;
 
 namespace DataLayer.Services
 {
-    public class TermRepository : ITermRepository
+    public class TermRepository : AllInOneRepository<Term>
     {
-        public bool Delete(int id)
+        public TermRepository(LoliBase db) : base(db) { }
+
+        public override IEnumerable<Term> GetAll()
         {
-            return Delete(GetById(id));
+            return db.Terms;
         }
 
-        public bool Delete(Term entity)
+        public override Term GetById(int id)
+        {
+            return db.Terms.Single(entity => entity.Id == id);
+        }
+
+        public override bool Insert(Term entity)
         {
             try
             {
-                db.Entry(entity).State = EntityState.Deleted;
+                db.Terms.Add(entity);
                 return true;
             }
             catch (Exception)
@@ -29,34 +38,6 @@ namespace DataLayer.Services
             }
         }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Term> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Term GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Insert(Term entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(Term entity)
-        {
-            throw new NotImplementedException();
-        }
+        public bool ExistsByTitle(string title) => db.Terms.Any(entity => entity.Title == title);
     }
 }
