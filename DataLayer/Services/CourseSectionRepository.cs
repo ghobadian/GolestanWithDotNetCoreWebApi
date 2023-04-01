@@ -10,25 +10,59 @@ using DataLayer.Contexts;
 
 namespace DataLayer.Services
 {
-    public class CourseSectionRepository : AllInOneRepository<CourseSection>
+    public class CourseSectionRepository : ICourseSectionRepository
     {
-        public CourseSectionRepository(LoliBase db) : base(db) { }
+        private readonly LoliBase db;
+        public CourseSectionRepository(LoliBase db) => this.db = db;
 
-        public override IEnumerable<CourseSection> GetAll()
+        public IEnumerable<CourseSection> GetAll()
         {
             return db.CourseSections;
         }
 
-        public override CourseSection GetById(int id)
+        public CourseSection GetById(int id)
         {
             return db.CourseSections.Single(entity => entity.Id == id);
         }
 
-        public override bool Insert(CourseSection entity)
+        public CourseSection Insert(CourseSection entity)
         {
             try
             {
                 db.CourseSections.Add(entity);
+                return entity;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public CourseSection Update(CourseSection entity)
+        {
+            if (entity == null) { return default; }
+            try
+            {
+                db.Entry(entity).State = EntityState.Modified;
+                return entity;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
+
+        public bool Delete(int id)
+        {
+            return Delete(GetById(id));
+        }
+
+        public bool Delete(CourseSection entity)
+        {
+            if (entity == null) return false;
+            try
+            {
+                db.Entry(entity).State = EntityState.Deleted;
                 return true;
             }
             catch (Exception)
@@ -37,16 +71,26 @@ namespace DataLayer.Services
             }
         }
 
-        public IEnumerable<CourseSection> FindByTerm(Term term) => 
+        public void Save()
+        {
+            db.SaveChanges();
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+
+        public IEnumerable<CourseSection> FindByTerm(Term term) =>
             db.CourseSections.Where(entity => entity.Term == term);
 
-        public bool ExistsByIdAndTerm(int id, Term term) => 
+        public bool ExistsByIdAndTerm(int id, Term term) =>
             db.CourseSections.Any(entity => entity.Id == id && entity.Term == term);
 
         public IEnumerable<CourseSection> FindAllByTermAndInstructorUsernameAndCourseTitle(Term term, string username, string courseTitle) =>
             db.CourseSections.Where(entity => entity.Term == term && entity.Instructor.User.Username == username && entity.Course.Title == courseTitle);
-        
-        public IEnumerable<CourseSection> FindByInstructorId(int instructorId) => 
+
+        public IEnumerable<CourseSection> FindByInstructorId(int instructorId) =>
             db.CourseSections.Where(entity => entity.Instructor.Id == instructorId);
     }
 }

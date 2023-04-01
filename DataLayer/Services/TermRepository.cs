@@ -11,25 +11,59 @@ using DataLayer.Models.Users;
 
 namespace DataLayer.Services
 {
-    public class TermRepository : AllInOneRepository<Term>
+    public class TermRepository : ITermRepository
     {
-        public TermRepository(LoliBase db) : base(db) { }
+        private readonly LoliBase db;
+        public TermRepository(LoliBase db) => this.db = db;
 
-        public override IEnumerable<Term> GetAll()
+        public IEnumerable<Term> GetAll()
         {
             return db.Terms;
         }
 
-        public override Term GetById(int id)
+        public Term GetById(int id)
         {
             return db.Terms.Single(entity => entity.Id == id);
         }
 
-        public override bool Insert(Term entity)
+        public Term Insert(Term entity)
         {
             try
             {
                 db.Terms.Add(entity);
+                return entity;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public Term Update(Term entity)
+        {
+            if (entity == null) { return default; }
+            try
+            {
+                db.Entry(entity).State = EntityState.Modified;
+                return entity;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
+
+        public bool Delete(int id)
+        {
+            return Delete(GetById(id));
+        }
+
+        public bool Delete(Term entity)
+        {
+            if (entity == null) return false;
+            try
+            {
+                db.Entry(entity).State = EntityState.Deleted;
                 return true;
             }
             catch (Exception)
@@ -38,6 +72,18 @@ namespace DataLayer.Services
             }
         }
 
+        public void Save()
+        {
+            db.SaveChanges();
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
+        }
         public bool ExistsByTitle(string title) => db.Terms.Any(entity => entity.Title == title);
+
+        public bool ExistsById(int id) => db.Terms.Any(term => term.Id == id);
+
     }
 }

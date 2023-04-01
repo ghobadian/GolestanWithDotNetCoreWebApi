@@ -67,7 +67,7 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("TermId");
 
-                    b.ToTable("CourseSection");
+                    b.ToTable("CourseSections");
                 });
 
             modelBuilder.Entity("DataLayer.Models.CourseSectionRegistration", b =>
@@ -119,21 +119,12 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("DataLayer.Models.Users.Instructor", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Rank")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("Instructors");
                 });
@@ -141,10 +132,7 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("DataLayer.Models.Users.Student", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Degree")
                         .HasColumnType("int");
@@ -152,13 +140,7 @@ namespace DataLayer.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("Students");
                 });
@@ -252,7 +234,7 @@ namespace DataLayer.Migrations
                 {
                     b.HasOne("DataLayer.Models.Users.User", "User")
                         .WithOne("Instructor")
-                        .HasForeignKey("DataLayer.Models.Users.Instructor", "UserId")
+                        .HasForeignKey("DataLayer.Models.Users.Instructor", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -263,7 +245,7 @@ namespace DataLayer.Migrations
                 {
                     b.HasOne("DataLayer.Models.Users.User", "User")
                         .WithOne("Student")
-                        .HasForeignKey("DataLayer.Models.Users.Student", "UserId")
+                        .HasForeignKey("DataLayer.Models.Users.Student", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

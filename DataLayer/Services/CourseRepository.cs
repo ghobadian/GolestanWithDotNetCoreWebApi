@@ -1,27 +1,60 @@
 ﻿using DataLayer.Contexts;
 using DataLayer.Models;
+using DataLayer.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.Services
 {
-    public class CourseRepository : AllInOneRepository<Course>
+    public class CourseRepository : ICourseRepository
     {
-        public CourseRepository(LoliBase db) : base(db) { }
+        private readonly LoliBase db;
+        public CourseRepository(LoliBase db) => this.db = db;
 
-        public override IEnumerable<Course> GetAll()
+        public IEnumerable<Course> GetAll()
         {
             return db.Courses;
         }
 
-        public override Course GetById(int id)
+        public Course GetById(int id)
         {
             return db.Courses.Single(entity => entity.Id == id);
         }
 
-        public override bool Insert(Course entity)
+        public bool ExistsByTitle(string title)
         {
+            return db.Courses.Any(entity => entity.Title == title);
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+
+        public Course Update(Course entity)
+        {
+            if (entity == null) { return default; }
             try
             {
-                db.Courses.Add(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                return entity;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
+
+        public bool Delete(int id)
+        {
+            return Delete(GetById(id));
+        }
+
+        public bool Delete(Course entity)
+        {
+            if (entity == null) return false;
+            try
+            {
+                db.Entry(entity).State = EntityState.Deleted;
                 return true;
             }
             catch (Exception)
@@ -30,9 +63,25 @@ namespace DataLayer.Services
             }
         }
 
-        public bool ExistsByTitle(string title)
+        public void Save()
         {
-            return db.Courses.Any(entity => entity.Title == title);
+            db.SaveChanges();
         }
+
+        public Course Insert(Course entity)
+        {
+            try
+            {
+                db.Courses.Add(entity);
+                return entity;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public bool ExistsById(int id) => db.Instructors.Any(instructor => instructor.Id == id);
+
     }
 }

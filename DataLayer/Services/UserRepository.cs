@@ -12,25 +12,59 @@ using System.Runtime.InteropServices;
 
 namespace DataLayer.Services
 {
-    public class UserRepository : AllInOneRepository<User>
+    public class UserRepository : IUserRepository
     {
-        public UserRepository(LoliBase db) : base(db) { }
+        private readonly LoliBase db;
+        public UserRepository(LoliBase db) => this.db = db;
 
-        public override IEnumerable<User> GetAll()
+        public IEnumerable<User> GetAll()
         {
             return db.Users;
         }
 
-        public override User GetById(int id)
+        public User GetById(int id)
         {
             return db.Users.Single(entity => entity.Id == id);
         }
 
-        public override bool Insert(User entity)
+        public User Insert(User entity)
         {
             try
             {
                 db.Users.Add(entity);
+                return entity;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public User Update(User entity)
+        {
+            if (entity == null) { return default; }
+            try
+            {
+                db.Entry(entity).State = EntityState.Modified;
+                return entity;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
+
+        public bool Delete(int id)
+        {
+            return Delete(GetById(id));
+        }
+
+        public bool Delete(User entity)
+        {
+            if (entity == null) return false;
+            try
+            {
+                db.Entry(entity).State = EntityState.Deleted;
                 return true;
             }
             catch (Exception)
@@ -39,9 +73,19 @@ namespace DataLayer.Services
             }
         }
 
-        User FindByUsername(string username) => db.Users.Single(user => user.Username == username); 
+        public void Save()
+        {
+            db.SaveChanges();
+        }
 
-        User FindByStudentId(int studentId) => db.Users.Single(user => user.Student.Id == studentId);
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+
+        public User FindByUsername(string username) => db.Users.Single(user => user.Username == username);
+
+        public User FindByStudentId(int studentId) => db.Users.Single(user => user.Student.Id == studentId);
 
         public User FindByInstructorId(int instructorId) => db.Users.Single(user => user.Instructor.Id == instructorId);
         public IEnumerable<User> FindByAdminTrue() => db.Users.Where(user => user.Admin);

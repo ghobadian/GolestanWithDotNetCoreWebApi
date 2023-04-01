@@ -10,25 +10,59 @@ using DataLayer.Contexts;
 
 namespace DataLayer.Services
 {
-    public class StudentRepository : AllInOneRepository<Student>
+    public class StudentRepository : IStudentRepository
     {
-        public StudentRepository(LoliBase db) : base(db) { }
+        private readonly LoliBase db;
+        public StudentRepository(LoliBase db) => this.db = db;
 
-        public override IEnumerable<Student> GetAll()
+        public IEnumerable<Student> GetAll()
         {
             return db.Students;
         }
 
-        public override Student GetById(int id)
+        public Student GetById(int id)
         {
             return db.Students.Single(entity => entity.Id == id);
         }
 
-        public override bool Insert(Student entity)
+        public Student Insert(Student entity)
         {
             try
             {
                 db.Students.Add(entity);
+                return entity;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public Student Update(Student entity)
+        {
+            if (entity == null) { return default; }
+            try
+            {
+                db.Entry(entity).State = EntityState.Modified;
+                return entity;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
+
+        public bool Delete(int id)
+        {
+            return Delete(GetById(id));
+        }
+
+        public bool Delete(Student entity)
+        {
+            if (entity == null) return false;
+            try
+            {
+                db.Entry(entity).State = EntityState.Deleted;
                 return true;
             }
             catch (Exception)
@@ -37,7 +71,15 @@ namespace DataLayer.Services
             }
         }
 
-        public Student FindByUsername(string username) => 
-            db.Students.Single(entity => entity.User.Username == username);
+        public void Save()
+        {
+            db.SaveChanges();
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+        public Student FindByUsername(string username) => db.Students.Single(entity => entity.User.Username == username);
     }
 }

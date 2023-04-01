@@ -4,15 +4,15 @@ using DataLayer.Enums;
 
 namespace DataLayer.Models.Users
 {
-    public class Instructor
+    public class Instructor : User
     {
-        [Key]
+        [ForeignKey("User")]
         public int Id { get; set; }
 
         public Rank Rank { get; set; }  
-        [ForeignKey("User")]
-        public int UserId;
+
         public virtual User User { get; set; }
+
         public virtual List<CourseSection> CourseSections { get; set; }
 
     }

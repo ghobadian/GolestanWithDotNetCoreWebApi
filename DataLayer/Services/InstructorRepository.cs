@@ -11,25 +11,22 @@ using DataLayer.Models;
 
 namespace DataLayer.Services
 {
-    public class InstructorRepository : AllInOneRepository<Instructor>
+    public class InstructorRepository : IInstructorRepository
     {
-        public InstructorRepository(LoliBase db) : base(db) { }
+        private readonly LoliBase db;
+        public InstructorRepository(LoliBase db) => this.db = db;
 
-        public override IEnumerable<Instructor> GetAll()
+        public bool Delete(int id)
         {
-            return db.Instructors;
+            return Delete(GetById(id));
         }
 
-        public override Instructor GetById(int id)
+        public bool Delete(Instructor entity)
         {
-            return db.Instructors.Single(entity => entity.Id == id);
-        }
-
-        public override bool Insert(Instructor entity)
-        {
+            if (entity == null) return false;
             try
             {
-                db.Instructors.Add(entity);
+                db.Entry(entity).State = EntityState.Deleted;
                 return true;
             }
             catch (Exception)
@@ -37,5 +34,54 @@ namespace DataLayer.Services
                 return false;
             }
         }
+
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+
+        public IEnumerable<Instructor> GetAll()
+        {
+            return db.Instructors;
+        }
+
+        public Instructor GetById(int id)
+        {
+            return db.Instructors.Single(entity => entity.Id == id);
+        }
+
+        public Instructor Insert(Instructor entity)
+        {
+            try
+            {
+                db.Instructors.Add(entity);
+                return entity;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public void Save()
+        {
+            db.SaveChanges();
+        }
+
+        public Instructor Update(Instructor entity)
+        {
+            if (entity == null) { return default; }
+            try
+            {
+                db.Entry(entity).State = EntityState.Modified;
+                return entity;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
+
+        public bool ExistsById(int id) => db.Instructors.Any(instructor => instructor.Id == id);
     }
 }

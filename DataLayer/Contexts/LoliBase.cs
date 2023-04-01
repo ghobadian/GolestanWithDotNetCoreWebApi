@@ -1,6 +1,8 @@
 ﻿using DataLayer.Models;
 using DataLayer.Models.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace DataLayer.Contexts
 {
@@ -8,7 +10,6 @@ namespace DataLayer.Contexts
     {
         public LoliBase(DbContextOptions<LoliBase> options) : base(options)
         {
-
         }
 
         public LoliBase() { }
@@ -28,5 +29,15 @@ namespace DataLayer.Contexts
                 .HaveColumnType("date");
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder); 
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+            modelBuilder.Entity<IdentityUserRole<string>>().HasKey(p => new
+            {
+                p.UserId, p.RoleId 
+
+            });
+        }
     }
 }
