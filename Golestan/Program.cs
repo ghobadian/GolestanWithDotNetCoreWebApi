@@ -1,69 +1,99 @@
+using System.Text;
+using AutoMapper;
 using DataLayer.Contexts;
 using DataLayer.Models;
 using DataLayer.Models.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
+using Golestan.Aspects;
 using Golestan.Services;
 using Golestan.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Golestan
 {
 public class Program
 {
-public static void Main(string[] args)
-{
-
-    var builder = WebApplication.CreateBuilder(args);
-
-    // Add services to the container.
-
-    builder.Services.AddControllers();
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
-    builder.Services.AddDbContext<LoliBase>(options => 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Lolita")));
-    DependencyInjection(builder);
-
-    var app = builder.Build();
-
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
+    public static void Main(string[] args)
     {
-        app.UseSwagger();
-        app.UseSwaggerUI();
+
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+
+        builder.Services.AddControllers();
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+        builder.Services.AddDbContext<LoliBase>(options => 
+            options.UseSqlServer(builder.Configuration.GetConnectionString("Lolita")));
+        DependencyInjection(builder);
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.UseRouting();
+
+        app.Run();
     }
 
-    app.UseHttpsRedirection();
 
-
-    app.UseAuthorization();
-
-    app.MapControllers();
-
-    app.UseRouting();
-
-    app.Run();
-}
-
-    private static void DependencyInjection(WebApplicationBuilder builder)
+    private static void DependencyInjection(WebApplicationBuilder builder) 
     {
         RepositoryDependencyInjection(builder);
-        builder.Services.AddSingleton<DbContext, LoliBase>();
-        builder.Services.AddSingleton<ICourseService, CourseService>();
+        ServiceDependencyInjection(builder);
+        AuthorizationDependencyInjection(builder);
+    }
+
+    private static void AuthorizationDependencyInjection(WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<AdminAuthorizeAttribute.IAdminAuthorize, AdminAuthorizeAttribute.AdminAuthorize>();
+        builder.Services.AddScoped<SpecificAdminAuthorizeAttribute.ISpecificAdminAuthorize, SpecificAdminAuthorizeAttribute.ISpecificAdminAuthorize>();
+        builder.Services.AddScoped<InstructorAuthorizeAttribute.IInstructorAuthorize, InstructorAuthorizeAttribute.InstructorAuthorize>();
+        builder.Services.AddScoped<SpecificInstructorAuthorizeAttribute.ISpecificInstructorAuthorize, SpecificInstructorAuthorizeAttribute.SpecificInstructorAuthorize>();
+        builder.Services.AddScoped<StudentAuthorizeAttribute.IStudentAuthorize, StudentAuthorizeAttribute.StudentAuthorize>();
+        builder.Services.AddScoped<SpecificStudentAuthorizeAttribute.ISpecificStudentAuthorize, SpecificStudentAuthorizeAttribute.SpecificStudentAuthorize>();
+    }
+
+    private static void ServiceDependencyInjection(WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<IAdminService, AdminService>();
+        builder.Services.AddScoped<ICourseSectionService, CourseSectionService>();
+        builder.Services.AddScoped<ICourseService, CourseService>();
+        builder.Services.AddScoped<IInstructorService, InstructorService>();
+        builder.Services.AddScoped<IStudentService, StudentService>();
+        builder.Services.AddScoped<ITermService, TermService>();
+        builder.Services.AddScoped<IUserService, UserService>();
     }
 
     private static void RepositoryDependencyInjection(WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton<ICourseRepository, CourseRepository>();
-        builder.Services.AddSingleton<ICourseSectionRepository, CourseSectionRepository>();
-        builder.Services.AddSingleton<ICourseSectionRegistrationRepository, CourseSectionRegistrationRepository>();
-        builder.Services.AddSingleton<IInstructorRepository, InstructorRepository>();
-        builder.Services.AddSingleton<IStudentRepository, StudentRepository>();
-        builder.Services.AddSingleton<ITermRepository, TermRepository>();
-        builder.Services.AddSingleton<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+        builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+        builder.Services.AddScoped<ICourseSectionRepository, CourseSectionRepository>();
+        builder.Services.AddScoped<ICourseSectionRegistrationRepository, CourseSectionRegistrationRepository>();
+        builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
+        builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+        builder.Services.AddScoped<ITermRepository, TermRepository>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
     }
 }
 }

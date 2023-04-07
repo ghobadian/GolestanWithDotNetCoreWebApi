@@ -8,16 +8,10 @@ using System.Threading.Tasks;
 
 namespace DataLayer.Repositories
 {
-    public interface IInstructorRepository : IDisposable
+    public interface IInstructorRepository : ICrudRepository<Instructor>
     {
-        IEnumerable<Instructor> GetAll();
-        Instructor GetById(int id);
-        Instructor Insert(Instructor entity);
-        Instructor Update(Instructor entity);
-        bool Delete(int id);
-        bool Delete(Instructor entity);
-        void Save();
-        void Dispose();
-        public bool ExistsById(int id);
+        bool ExistsById(int id);
+        bool ExistsByUsername(string username);
+        Instructor FindByUsername(string username);
     }
 }

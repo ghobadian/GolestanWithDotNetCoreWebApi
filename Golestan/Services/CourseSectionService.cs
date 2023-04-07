@@ -1,5 +1,6 @@
 using DataLayer.Models;
-using DataLayer.Models.DTOs;
+using DataLayer.Models.DTOs.Input;
+using DataLayer.Models.DTOs.Output;
 using DataLayer.Models.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
@@ -28,10 +29,11 @@ public class CourseSectionService : ICourseSectionService
         this.instructorRepository = instructorRepository;
     }
 
-    public IEnumerable<CourseSection> List(int termId, string instructorName, string courseName/*, int page, int number*/) {
-        var term = termRepository.GetById(termId);//todo optimize
-        return courseSectionRepository.FindAllByTermAndInstructorUsernameAndCourseTitle(term, instructorName, courseName/*, PageRequest.of(page, number)*/);
-    }
+    public IEnumerable<CourseSection> List() => courseSectionRepository.GetAll();
+
+    public IEnumerable<CourseSection> List(int termId, string instructorUsername, string courseTitle/*, int page, int number*/) =>
+        courseSectionRepository
+            .FindAllByTermIdAndInstructorUsernameAndCourseTitle(termId, instructorUsername, courseTitle/*, PageRequest.of(page, number)*/);
 
     public List<StudentDto> ListStudentsByCourseSection(int id) => 
         courseSectionRegistrationRepository.FindByCourseSectionId(id)
@@ -40,13 +42,12 @@ public class CourseSectionService : ICourseSectionService
     private static StudentDto GetStudentDetails(CourseSectionRegistration csr) 
     {
         var student = csr.Student;
-        var user = student.User;
-        return new StudentDto { Id = student.Id, Name = user.Name, Number = user.Phone, Score = csr.Score };
+        return new StudentDto { Id = student.Id, Name = student.Name, Number = student.PhoneNumber, Score = csr.Score };
     }
 
-    public CourseSection Create(int courseId, int instructorId, int termId)
+    public CourseSection Create(CourseSectionInputDto dto)
     {
-        var courseSection = BuildCourseSection(courseId, instructorId, termId);
+        var courseSection = BuildCourseSection(dto.CourseId, dto.InstructorId, dto.TermId);
         //log.info("CourseSection " + courseSection + "created");
         var insertedCourseSection = courseSectionRepository.Insert(courseSection);
         courseSectionRepository.Save();
@@ -68,12 +69,12 @@ public class CourseSectionService : ICourseSectionService
         return new CourseSectionDtoLight { CourseSection = courseSection, NumberOfStudents = numberOfStudents };
     }
 
-    public CourseSection Update(int termId, int courseId, int instructorId, int courseSectionId)
+    public CourseSection Update(int id, CourseSectionInputDto dto)
     {
-        CourseSection courseSection = courseSectionRepository.GetById(courseSectionId);
-        UpdateTerm(termId, courseSection);
-        UpdateCourse(courseId, courseSection);
-        UpdateInstructor(instructorId, courseSection);
+        var courseSection = courseSectionRepository.GetById(id);
+        UpdateTerm(dto.TermId, courseSection);
+        UpdateCourse(dto.CourseId, courseSection);
+        UpdateInstructor(dto.InstructorId, courseSection);
         courseSectionRepository.Update(courseSection);
         courseSectionRepository.Save();
         return courseSection;
@@ -102,7 +103,7 @@ public class CourseSectionService : ICourseSectionService
 
     public void Delete(int id)
     {
-        //log.info("CourseSection " + cs + " Deleted");
+        //log.info("CourseSection " + service + " Deleted");
         courseSectionRepository.Delete(id);
         courseSectionRepository.Save();
     }

@@ -83,5 +83,7 @@ namespace DataLayer.Services
         }
 
         public bool ExistsById(int id) => db.Instructors.Any(instructor => instructor.Id == id);
+        public bool ExistsByUsername(string username) => db.Instructors.Any(instructor => instructor.UserName == username);
+        public Instructor FindByUsername(string username) => db.Instructors.Single(instructor => instructor.UserName == username);
     }
 }

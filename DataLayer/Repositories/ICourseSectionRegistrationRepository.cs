@@ -8,16 +8,8 @@ using System.Threading.Tasks;
 
 namespace DataLayer.Repositories
 {
-    public interface ICourseSectionRegistrationRepository : IDisposable
+    public interface ICourseSectionRegistrationRepository : ICrudRepository<CourseSectionRegistration>
     {
-        IEnumerable<CourseSectionRegistration> GetAll();
-        CourseSectionRegistration GetById(int id);
-        CourseSectionRegistration Insert(CourseSectionRegistration entity);
-        CourseSectionRegistration Update(CourseSectionRegistration entity);
-        bool Delete(int id);
-        bool Delete(CourseSectionRegistration entity);
-        void Save();
-        void Dispose();
 
         CourseSectionRegistration FindByCourseSectionIdAndStudentId(int courseSectionId, int studentId);
         bool ExistsByCourseSectionIdAndStudentId(int courseSectionId, int studentId);

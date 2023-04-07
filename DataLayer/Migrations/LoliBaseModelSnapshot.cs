@@ -116,36 +116,7 @@ namespace DataLayer.Migrations
                     b.ToTable("Terms");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.Users.Instructor", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rank")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Instructors");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.Users.Student", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Degree")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("date");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Students");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.Users.User", b =>
+            modelBuilder.Entity("DataLayer.Models.Users.Admin", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -154,9 +125,6 @@ namespace DataLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Admin")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -171,17 +139,98 @@ namespace DataLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Phone")
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Admins");
+                });
+
+            modelBuilder.Entity("DataLayer.Models.Users.Instructor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Instructors");
+                });
+
+            modelBuilder.Entity("DataLayer.Models.Users.Student", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Degree")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("DataLayer.Models.CourseSection", b =>
@@ -230,28 +279,6 @@ namespace DataLayer.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.Users.Instructor", b =>
-                {
-                    b.HasOne("DataLayer.Models.Users.User", "User")
-                        .WithOne("Instructor")
-                        .HasForeignKey("DataLayer.Models.Users.Instructor", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.Users.Student", b =>
-                {
-                    b.HasOne("DataLayer.Models.Users.User", "User")
-                        .WithOne("Student")
-                        .HasForeignKey("DataLayer.Models.Users.Student", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("DataLayer.Models.Course", b =>
                 {
                     b.Navigation("CourseSections");
@@ -275,13 +302,6 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("DataLayer.Models.Users.Student", b =>
                 {
                     b.Navigation("CourseSectionRegistrations");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.Users.User", b =>
-                {
-                    b.Navigation("Instructor");
-
-                    b.Navigation("Student");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,29 +1,46 @@
 
 using DataLayer.Enums;
 using DataLayer.Models;
+using DataLayer.Models.DTOs.Input;
+using DataLayer.Models.DTOs.Output;
 using DataLayer.Models.Users;
 using DataLayer.Repositories;
+using DataLayer.Services;
+using Golestan.Business.Exceptions;
+using Golestan.Services.Interfaces;
+using Golestan.Utils;
 
 namespace Golestan.Services;
-public class InstructorService {
+public class InstructorService : IInstructorService 
+{
     private readonly IInstructorRepository instructorRepository;
     private readonly ICourseSectionRegistrationRepository csrRepository;
+    private readonly IUserService userService;
 
     public InstructorService(IInstructorRepository instructorRepository,
-        ICourseSectionRegistrationRepository csrRepository)
+        ICourseSectionRegistrationRepository csrRepository,
+        IUserService userService)
     {
         this.instructorRepository = instructorRepository;
         this.csrRepository = csrRepository;
+        this.userService = userService;
     }
 
     public IEnumerable<Instructor> List(/*int page, int number*/) => instructorRepository.GetAll();
+    public Instructor Create(InstructorInputDto dto)
+    {
+        var instructor = new Instructor();
+        userService.CreateUserAspects(instructor, dto);
+        instructorRepository.Insert(instructor);
+        instructorRepository.Save();
+        return instructor;
+    }
 
     public Instructor Read(int instructorId) => instructorRepository.GetById(instructorId);
-
-    public Instructor Update(Rank rank, int instructorId)
+    public Instructor Update(int id, InstructorInputDto dto)
     {
-        Instructor instructor = instructorRepository.GetById(instructorId);
-        instructor.Rank = rank;//todo check if null or rank is the same as before
+        var instructor = Read(id);
+        userService.CreateUserAspects(instructor, dto);
         instructorRepository.Update(instructor);
         instructorRepository.Save();
         return instructor;
@@ -33,7 +50,7 @@ public class InstructorService {
     {
 
         //List<CourseSection> courseSectionsOfInstructor = repo.findCourseSectionByInstructorId(instructorId);
-        //courseSectionsOfInstructor.forEach(cs -> cs.setInstructor(null));
+        //courseSectionsOfInstructor.forEach(service -> service.setInstructor(null));
         //todo test delete cascading 
         instructorRepository.Delete(instructorId);
         //log.info("Instructor with id " + instructorId + " Deleted");
@@ -56,5 +73,17 @@ public class InstructorService {
             response.Add(GiveMark(courseSectionId, id, score));
         }
         return response;
+    }
+
+    public TokenOutputDto Login(string username, string password)
+    {
+        if (username == null || password == null || !instructorRepository.ExistsByUsername(username)) throw new UsernameOrPasswordInvalidException();
+        var instructor = instructorRepository.FindByUsername(username);
+        if (instructor.Password != PasswordEncoder.Encode(password)) throw new UsernameOrPasswordInvalidException();
+        DateTime validUntil = new DateTime() + TimeSpan.FromMinutes(30);
+        string tokenValue = TokenGenerator.GenerateToken();
+        var token = new Token { Role = Role.INSTRUCTOR, UserName = username, ValidUntil = validUntil, Value = tokenValue };
+        TokenRepository.Insert(token);
+        return new TokenOutputDto() { Token = tokenValue, ValidUntil = validUntil };
     }
 }

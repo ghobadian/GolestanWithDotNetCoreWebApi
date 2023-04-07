@@ -14,7 +14,7 @@ namespace DataLayer.Models.Users
         [Required]
         public DateOnly StartDate { get; set; }
 
-        public virtual User User { get; set; }
+        //public virtual User User { get; set; }
 
         public virtual List<CourseSectionRegistration> CourseSectionRegistrations { get;} = new List<CourseSectionRegistration>();
     }

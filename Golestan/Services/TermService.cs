@@ -1,5 +1,6 @@
 
 using DataLayer.Models;
+using DataLayer.Models.DTOs.Input;
 using DataLayer.Repositories;
 using Golestan.Services.Interfaces;
 
@@ -18,9 +19,9 @@ public class TermService : ITermService {
         return termRepository.GetAll(/*page, number*/);
     }
 
-    public Term Create(string title, bool open)
+    public Term Create(TermInputDto newTerm)
     {
-        var term = new Term { Title = title, Open = open };
+        var term = new Term { Title = newTerm.Title, Open = newTerm.Open.Value };
         //log.info("Term with title: " + title + " created");
         termRepository.Insert(term);
         termRepository.Save();
@@ -29,11 +30,11 @@ public class TermService : ITermService {
 
     public Term Read(int termId) => termRepository.GetById(termId);
 
-    public Term Update(string title, bool? open, int termId)
+    public Term Update(int termId, TermInputDto newTerm)
     {
         var term = Read(termId);
-        ChangeTitle(title, term);
-        ChangeOpen(open, term);
+        ChangeTitle(newTerm.Title, term);
+        ChangeOpen(newTerm.Open, term);
         termRepository.Update(term);
         termRepository.Save();
         return term;
@@ -56,6 +57,6 @@ public class TermService : ITermService {
     {
         termRepository.Delete(id);
         termRepository.Save();
-        //log.info("Term with title: " + term.getTitle() + " Deleted");
+        //log.info("Term with title: " + newTerm.getTitle() + " Deleted");
     }
 }

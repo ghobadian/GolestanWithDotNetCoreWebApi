@@ -8,16 +8,9 @@ using System.Threading.Tasks;
 
 namespace DataLayer.Repositories
 {
-    public interface IStudentRepository : IDisposable
+    public interface IStudentRepository : ICrudRepository<Student>
     {
-        IEnumerable<Student> GetAll();
-        Student GetById(int id);
-        Student Insert(Student entity);
-        Student Update(Student entity);
-        bool Delete(int id);
-        bool Delete(Student entity);
-        void Save();
-        void Dispose();
+        bool ExistsByUsername(string username);//todo reduce duplicate code
         Student FindByUsername(string username);
     }
 }

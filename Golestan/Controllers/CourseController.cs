@@ -1,64 +1,41 @@
 using DataLayer.Models;
+using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.Users;
 using Golestan.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Golestan.Controllers
+namespace Golestan.Controllers;
+
+[ApiController]
+[Route("/[controller]/[action]")]
+public class CourseController : ControllerBase
 {
-    [ApiController]
-	[Route("[controller]")]
-    public class CourseController : ControllerBase
-	{
 
-		public readonly ICourseService cs;
-		public CourseController(ICourseService cs)
-		{
-			this.cs = cs;
-		}
+    public readonly ICourseService service;
+    public CourseController(ICourseService service) => this.service = service;
 
-		//public readonly CourseSecurityService securityService;
+    //public readonly CourseSecurityService securityService;
 
 
+    //public List<Course> List(int page, int number)
+    //{
+    //	return service.List(page, number);
+    //}
 
-		//public List<Course> List(int page, int number)
-		//{
-		//	return cs.List(page, number);
-		//}
+    [HttpGet]
+    public IEnumerable<Course> List() => service.List();
 
-		[HttpGet("List")]
-		public IEnumerable<Course> Get()
-		{
-			return cs.List();
-		}
+    [HttpPost]
+    public Course Create(CourseInputDto dto) => service.Create(dto);
 
+    [HttpGet("{id:int}")]
+    public Course Read(int id) => service.Read(id);
 
-		[HttpPost("Create")]
-		public Course create(int units, string title)
-		{
-			return cs.Create(units, title);
-		}
-
-		[HttpGet("Read")]
-		public Course Read(int id)
-		{
-			return cs.Read(id);
-		}
-
-		[HttpPut("Update")]
-		public Course Update(int id,
-							  /*(required = false)*/ string title,
-							  /*(required = false)*/ int units)
-		{
-
-			return cs.Update(id, title, units);
-		}
+    [HttpPut("{id:int}")]
+    public Course Update(int id, CourseInputDto dto) => service.Update(id, dto);
 
 
-		[HttpDelete("id")]
-		public void Delete(int id)
-		{
-			cs.Delete(id);
-		}
-	}
-
+    [HttpDelete("{id:int}")]
+    public void Delete(int id) => service.Delete(id);
 }
+

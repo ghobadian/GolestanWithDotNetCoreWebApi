@@ -3,7 +3,8 @@ namespace DataLayer.Enums
     public enum Role
     {
         STUDENT,
-        INSTRUCTOR
+        INSTRUCTOR,
+        ADMIN
     }
 }
 

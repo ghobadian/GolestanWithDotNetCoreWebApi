@@ -10,25 +10,14 @@ namespace DataLayer.Services
         private readonly LoliBase db;
         public CourseRepository(LoliBase db) => this.db = db;
 
-        public IEnumerable<Course> GetAll()
-        {
-            return db.Courses;
-        }
+        public IEnumerable<Course> GetAll() => db.Courses;
 
-        public Course GetById(int id)
-        {
-            return db.Courses.Single(entity => entity.Id == id);
-        }
+        public Course GetById(int id) => db.Courses.Single(entity => entity.Id == id);
 
         public bool ExistsByTitle(string title)
-        {
-            return db.Courses.Any(entity => entity.Title == title);
-        }
+        => db.Courses.Any(entity => entity.Title == title);
 
-        public void Dispose()
-        {
-            db.Dispose();
-        }
+        public void Dispose() => db.Dispose();
 
         public Course Update(Course entity)
         {
@@ -44,10 +33,7 @@ namespace DataLayer.Services
             }
         }
 
-        public bool Delete(int id)
-        {
-            return Delete(GetById(id));
-        }
+        public bool Delete(int id) => Delete(GetById(id));
 
         public bool Delete(Course entity)
         {
@@ -63,10 +49,7 @@ namespace DataLayer.Services
             }
         }
 
-        public void Save()
-        {
-            db.SaveChanges();
-        }
+        public void Save() => db.SaveChanges();
 
         public Course Insert(Course entity)
         {

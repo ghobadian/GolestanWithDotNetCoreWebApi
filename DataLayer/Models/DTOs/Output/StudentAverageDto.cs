@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataLayer.Models.DTOs;
+namespace DataLayer.Models.DTOs.Output;
 public class StudentAverageDto
 {
     public double Average { get; init; }

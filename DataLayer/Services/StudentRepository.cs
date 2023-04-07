@@ -15,15 +15,9 @@ namespace DataLayer.Services
         private readonly LoliBase db;
         public StudentRepository(LoliBase db) => this.db = db;
 
-        public IEnumerable<Student> GetAll()
-        {
-            return db.Students;
-        }
+        public IEnumerable<Student> GetAll() => db.Students;
 
-        public Student GetById(int id)
-        {
-            return db.Students.Single(entity => entity.Id == id);
-        }
+        public Student GetById(int id) => db.Students.Single(entity => entity.Id == id);
 
         public Student Insert(Student entity)
         {
@@ -52,10 +46,7 @@ namespace DataLayer.Services
             }
         }
 
-        public bool Delete(int id)
-        {
-            return Delete(GetById(id));
-        }
+        public bool Delete(int id) => Delete(GetById(id));
 
         public bool Delete(Student entity)
         {
@@ -71,15 +62,11 @@ namespace DataLayer.Services
             }
         }
 
-        public void Save()
-        {
-            db.SaveChanges();
-        }
+        public void Save() => db.SaveChanges();
 
-        public void Dispose()
-        {
-            db.Dispose();
-        }
-        public Student FindByUsername(string username) => db.Students.Single(entity => entity.User.Username == username);
+        public void Dispose() => db.Dispose();
+
+        public bool ExistsByUsername(string username) => db.Students.Any(entity => entity.UserName == username);
+        public Student FindByUsername(string username) => db.Students.Single(entity => entity.UserName == username);
     }
 }

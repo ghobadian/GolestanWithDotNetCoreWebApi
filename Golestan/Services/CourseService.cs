@@ -1,4 +1,5 @@
 using DataLayer.Models;
+using DataLayer.Models.DTOs.Input;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Services.Interfaces;
@@ -25,9 +26,9 @@ public class CourseService : ICourseService
     //    return repo.GetAll(page, number);
     //}
 
-    public Course Create(int units, string title)
+    public Course Create(CourseInputDto dto)
     {
-        Course course = new() { Units = units, Title = title };
+        Course course = new() { Units = dto.Units.Value, Title = dto.Title};
         //log.info("Course " + course.getTitle() + " created");
         courseRepository.Insert(course);
         courseRepository.Save();
@@ -39,11 +40,11 @@ public class CourseService : ICourseService
         return courseRepository.GetById(id);
     }
 
-    public Course Update(int courseId, string title, int? units)
+    public Course Update(int id, CourseInputDto dto)
     {
-        Course course = courseRepository.GetById(courseId);
-        UpdateTitle(title, course);
-        UpdateUnits(units, course);
+        Course course = courseRepository.GetById(id);
+        UpdateTitle(dto.Title, course);
+        UpdateUnits(dto.Units, course);
         var updatedCourse = courseRepository.Update(course);
         courseRepository.Save();
         return updatedCourse;

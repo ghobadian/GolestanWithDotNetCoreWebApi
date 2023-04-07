@@ -1,74 +1,44 @@
 
 using DataLayer.Models;
-using DataLayer.Models.DTOs;
 using DataLayer.Models.Users;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Common;
 using System.Runtime.InteropServices;
+using DataLayer.Models.DTOs.Input;
 using Golestan.Services;
 using Golestan.Services.Interfaces;
+using DataLayer.Models.DTOs.Output;
 
-namespace Golestan.Controllers
+namespace Golestan.Controllers;
+
+[ApiController]
+[Route("/[controller]/[action]")]
+public class CourseSectionController
 {
-    public class CourseSectionController
-    {
-        private readonly ICourseSectionService service;
+    private readonly ICourseSectionService service;
 
-        public CourseSectionController(ICourseSectionService service)
-        {
-            this.service = service;
-        }
+    public CourseSectionController(ICourseSectionService service) => this.service = service;
 
-        [HttpGet("{termId:int}")]
-        public IEnumerable<CourseSection> List(/*request_param*/ int termId,
-                                         /*auth*/
-                                          string instructorName,
-                                         string courseName
-                                         /*Integer pageNumber,*/
-                                          /*Integer maxInEachPage*/) {
-        return service.List(termId, instructorName, courseName/*, pageNumber, maxInEachPage*/);
-        }
+    [HttpGet("{termId:int}")]
+    public IEnumerable<CourseSection> List(int termId, /*auth*/string instructorName, string courseName /*Integer pageNumber,*/ /*Integer maxInEachPage*/) =>
+        service.List(termId, instructorName, courseName/*, pageNumber, maxInEachPage*/);
 
-        [HttpGet]
-        public List<StudentDto> ListStudentsOfSpecifiedCourseSection(/*request_param*/ int courseSectionId
-                                                                     /*auth*/)
-        {
-            //todo only instructor of the course section have access and ofcourse admin
-            return service.ListStudentsByCourseSection(courseSectionId);
-        }
+    [HttpGet("{courseSectionId:int}")]
+    public List<StudentDto> ListStudentsOfSpecifiedCourseSection( int courseSectionId /*auth*/) => 
+        service.ListStudentsByCourseSection(courseSectionId);
+        //todo only instructor of the course section have access and ofcourse admin
 
-        [HttpPost]
-        public CourseSection Create(/*request_param*/ int courseId,
-                              /*request_param*/ int instructorId,
-                              /*request_param*/ int termId
-                              /*auth*/)
-        {
-            return service.Create(courseId, instructorId, termId);
-        }
+    [HttpPost]
+    public CourseSection Create(CourseSectionInputDto dto /*auth*/) => service.Create(dto);
 
-        
-        [HttpGet]
-        public CourseSectionDtoLight Read(int id/*auth*/)
-        {
-            return service.Read(id);
-        }
+    [HttpGet("{id:int}")]
+    public CourseSectionDtoLight Read(int id/*auth*/)
+    => service.Read(id);
 
-        
-        [HttpPut("{id:int}")]
-        public CourseSection Update(/*request_param*//*(required = false)*/ int termId,
-                                     /*request_param*//*(required = false)*/ int courseId,
-                                     /*request_param*//*(required = false)*/ int instructorId,
-                                     int id
-                                     /*auth*/) {
-            return service.Update(termId, courseId, instructorId, id);
-        }
+    [HttpPut("{id:int}")]
+    public CourseSection Update(int id, CourseSectionInputDto dto /*auth*/) => service.Update(id, dto);
 
-
-        [HttpDelete]
-        public void Delete(int id
-                            /*auth*/)
-    {
-        service.Delete(id);
-    }
+    [HttpDelete]
+    public void Delete(int id /*auth*/) => service.Delete(id);
 }
-}
+
