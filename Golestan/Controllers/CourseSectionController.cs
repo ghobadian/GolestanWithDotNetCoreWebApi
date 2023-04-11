@@ -17,7 +17,7 @@ namespace Golestan.Controllers;
 [ApiController]
 [Route("/[controller]/[action]")]
 [HandleExceptions]
-public class CourseSectionController
+public class CourseSectionController//todo implement authorization of this class
 {
     private readonly ICourseSectionService service;
 

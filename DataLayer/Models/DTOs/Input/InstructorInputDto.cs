@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Models.DTOs.Input;
-public class InstructorInputDto : UserInputDto
-{
-    public Rank? Rank { get; init; }
-}
+
+public record InstructorInputDto(string? Username, string? Password, string? Name, string? Phone, string? NationalId,
+    Rank Rank) : UserInputDto(Username, Password, Name, Phone, NationalId);

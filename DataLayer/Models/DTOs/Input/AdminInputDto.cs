@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Models.DTOs.Input;
-public class AdminInputDto : UserInputDto
-{
-}
+
+public record AdminInputDto
+    (string? Username, string? Password, string? Name, string? Phone, string? NationalId) : UserInputDto(Username,
+        Password, Name, Phone, NationalId);

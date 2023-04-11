@@ -5,8 +5,5 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Models.DTOs.Input;
-public class TermInputDto
-{
-    public string? Title { get; init; }
-    public bool? Open { get; init; }
-}
+
+public record TermInputDto(string? Title, bool? Open);

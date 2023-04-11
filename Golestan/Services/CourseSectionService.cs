@@ -40,11 +40,10 @@ public class CourseSectionService : ICourseSectionService
         courseSectionRegistrationRepository.FindByCourseSectionId(id)
             .Select(GetStudentDetails).ToList();
 
-    private static StudentScoreOutputDto GetStudentDetails(CourseSectionRegistration csr) 
+    private static StudentScoreOutputDto GetStudentDetails(CourseSectionRegistration csr)
     {
-        StudentScoreOutputDto student = (StudentScoreOutputDto) csr.Student.OutputDto();
-        var sth  = student with { Score = csr.Score };
-        return new StudentScoreOutputDto { Id = student.Id, Name = student.Name, Number = student.PhoneNumber, Score = csr.Score };
+        var student = (StudentScoreOutputDto) csr.Student.OutputDto();
+        return  student with { Score = csr.Score };
     }
 
     public CourseSection Create(CourseSectionInputDto dto)

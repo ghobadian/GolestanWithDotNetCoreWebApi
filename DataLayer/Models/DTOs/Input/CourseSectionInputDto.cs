@@ -8,9 +8,5 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Models.DTOs.Input;
-public class CourseSectionInputDto
-{
-    public int TermId { get; init; }
-    public int InstructorId { get; init; }
-    public int CourseId { get; init; }
-}
+
+public record CourseSectionInputDto(int TermId, int InstructorId, int CourseId);
