@@ -1,7 +1,3 @@
 ﻿namespace DataLayer.Models.DTOs.Output;
 
-public class TokenOutputDto
-{
-    public string Token { get; set; }
-    public DateTime ValidUntil { get; set; }
-}
+public record TokenOutputDto(string Token, DateTime ValidUntil);

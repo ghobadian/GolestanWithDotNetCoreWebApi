@@ -2,8 +2,5 @@
 
 namespace DataLayer.Models.DTOs.Output;
 
-public class StudentOutputDto : UserOutputDto
-{
-    public Degree Degree { get; set; }
-    public DateOnly StartDate { get; set; }
-}
+public record StudentOutputDto(int Id, string Username, string Name, string NationalId, string PhoneNumber,
+    Degree Degree, DateOnly StartDate) : UserOutputDto(Id, Username, Name, NationalId, PhoneNumber);

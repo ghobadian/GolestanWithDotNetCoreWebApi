@@ -5,9 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Models.DTOs.Output;
-public class StudentAverageDto
-{
-    public double Average { get; init; }
-    public List<CourseSectionOutputDto> CourseSections { get; init; }
-}
+
+public record StudentAverageDto(double Average, List<CourseSectionOutputDto> CourseSections);
 

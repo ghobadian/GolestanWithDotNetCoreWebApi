@@ -1,13 +1,7 @@
 ﻿using DataLayer.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataLayer.Models.DTOs.Output;
-public class InstructorOutputDto : UserOutputDto
-{
-    public Rank Rank { get; init; }
-}
+
+public record InstructorOutputDto(int Id, string Username, string Name, string NationalId, string PhoneNumber,
+    Rank Rank) : UserOutputDto(Id, Username, Name, NationalId, PhoneNumber);
 
