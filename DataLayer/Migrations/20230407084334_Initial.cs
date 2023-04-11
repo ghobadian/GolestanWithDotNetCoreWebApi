@@ -179,7 +179,7 @@ namespace DataLayer.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CourseSections_TermId",
                 table: "CourseSections",
-                column: "TermId");
+                column: "Id");
         }
 
         /// <inheritdoc />

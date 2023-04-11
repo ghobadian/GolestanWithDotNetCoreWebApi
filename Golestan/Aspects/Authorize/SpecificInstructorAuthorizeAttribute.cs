@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using PostSharp.Aspects;
 using PostSharp.Serialization;
 
-namespace Golestan.Aspects;
+namespace Golestan.Aspects.Authorize;
 
 public class SpecificInstructorAuthorizeAttribute : ServiceFilterAttribute
 {
@@ -19,7 +19,7 @@ public class SpecificInstructorAuthorizeAttribute : ServiceFilterAttribute
 
     public interface ISpecificInstructorAuthorize : IActionFilter
     {
-        
+
     }
 
     public class SpecificInstructorAuthorize : ISpecificInstructorAuthorize
@@ -30,8 +30,8 @@ public class SpecificInstructorAuthorizeAttribute : ServiceFilterAttribute
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            var tokenValue = context.ActionArguments["token"].ToString();
-            var token = TokenRepository.GetById(tokenValue);
+            var rawToken = context.ActionArguments["token"].ToString();
+            var token = TokenRepository.GetById(rawToken);
             if (token.Role == Role.ADMIN) return;
             //todo check what else is inside the context
             var instructor = instructorRepository.FindByUsername(token.UserName);

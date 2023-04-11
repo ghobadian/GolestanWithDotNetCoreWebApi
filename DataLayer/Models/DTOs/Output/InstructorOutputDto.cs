@@ -6,9 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Models.DTOs.Output;
-public class InstructorDto
+public class InstructorOutputDto : UserOutputDto
 {
-    public string Name { get; init; }
     public Rank Rank { get; init; }
 }
 

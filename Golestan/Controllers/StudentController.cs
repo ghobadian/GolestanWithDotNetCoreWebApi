@@ -1,15 +1,20 @@
 using DataLayer.Models;
 using DataLayer.Models.DTOs.Output;
 using Golestan.Aspects;
+using Golestan.Aspects.Authorize;
+using Golestan.Aspects.ExceptionHandling;
 using Golestan.Services;
+using Golestan.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Golestan.Controllers;
 
 [ApiController]
 [Route("/[controller]/[action]")]
-public class StudentController {
-    public readonly StudentService service;
+[HandleExceptions]
+public class StudentController
+{
+    public readonly IStudentService service;
 
     public StudentController(StudentService service)
     {
@@ -21,7 +26,7 @@ public class StudentController {
     [HttpPost("{courseSectionId:int}")]
     [StudentAuthorize]
     //todo extra authorization for not active users
-    public CourseSectionRegistration SignUpSection(int courseSectionId, [FromHeader] string token) => service.SignUpSection(courseSectionId);//todo fix in service
+    public CourseSectionRegistration SignUpSection(int courseSectionId, [FromHeader] string token) => service.SignUpSection(courseSectionId, token);//todo fix in service
 
 
     [HttpGet("{termId:int}")]

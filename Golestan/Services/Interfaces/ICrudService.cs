@@ -1,12 +1,12 @@
 ﻿using DataLayer.Models;
 
 namespace Golestan.Services.Interfaces;
-public interface ICrudService<T, TInputDto>
+public interface ICrudService<TInputDto, TOutputDto>
 {
-    IEnumerable<T> List();
-    T Create(TInputDto dto);
-    T Read(int id);
-    T Update(int id, TInputDto dto);
+    IEnumerable<TOutputDto> List();
+    TOutputDto Create(TInputDto dto);
+    TOutputDto Read(int id);
+    TOutputDto Update(int id, TInputDto dto);
     void Delete(int id);
 }
 

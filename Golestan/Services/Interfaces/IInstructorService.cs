@@ -8,7 +8,7 @@ using DataLayer.Services;
 
 namespace Golestan.Services.Interfaces;
 
-public interface IInstructorService : ICrudService<Instructor, InstructorInputDto>
+public interface IInstructorService : ICrudService<InstructorInputDto, InstructorOutputDto>
 {
     CourseSectionRegistration GiveMark(int courseSectionId, int studentId, double score);
     List<CourseSectionRegistration> GiveMultipleMarks(int courseSectionId,

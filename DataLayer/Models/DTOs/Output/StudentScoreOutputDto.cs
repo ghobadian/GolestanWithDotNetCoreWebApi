@@ -6,12 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Models.DTOs.Output;
-public class CourseSectionDto
+
+public class StudentScoreOutputDto : StudentOutputDto
 {
-    public int Id { get; init; }
-    public string CourseName { get; init; }
-    public int CourseUnits { get; init; }
-    public InstructorDto Instructor { get; init; }
     public double Score { get; init; }
 }
 

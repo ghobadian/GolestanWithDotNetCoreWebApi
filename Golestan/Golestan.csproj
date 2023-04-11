@@ -31,8 +31,4 @@
     <ProjectReference Include="..\DataLayer\DataLayer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Business\Advices\" />
-  </ItemGroup>
-
 </Project>

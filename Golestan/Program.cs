@@ -5,7 +5,8 @@ using DataLayer.Models;
 using DataLayer.Models.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
-using Golestan.Aspects;
+using Golestan.Aspects.Authorize;
+using Golestan.Aspects.ExceptionHandling;
 using Golestan.Services;
 using Golestan.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,7 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Golestan
 {
-public class Program
+    public class Program
 {
     public static void Main(string[] args)
     {
@@ -61,16 +62,22 @@ public class Program
         RepositoryDependencyInjection(builder);
         ServiceDependencyInjection(builder);
         AuthorizationDependencyInjection(builder);
+        ExceptionHandlingInjection(builder);
+    }
+
+    private static void ExceptionHandlingInjection(WebApplicationBuilder builder)
+    {
+        builder.Services
+            .AddScoped<HandleExceptionsAttribute.IHandleExceptions, HandleExceptionsAttribute.HandleExceptions>();
     }
 
     private static void AuthorizationDependencyInjection(WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<AdminAuthorizeAttribute.IAdminAuthorize, AdminAuthorizeAttribute.AdminAuthorize>();
-        builder.Services.AddScoped<SpecificAdminAuthorizeAttribute.ISpecificAdminAuthorize, SpecificAdminAuthorizeAttribute.ISpecificAdminAuthorize>();
+        builder.Services.AddScoped<SpecificAdminAuthorizeAttribute.ISpecificAdminAuthorize, SpecificAdminAuthorizeAttribute.SpecificAdminAuthorize>();
         builder.Services.AddScoped<InstructorAuthorizeAttribute.IInstructorAuthorize, InstructorAuthorizeAttribute.InstructorAuthorize>();
         builder.Services.AddScoped<SpecificInstructorAuthorizeAttribute.ISpecificInstructorAuthorize, SpecificInstructorAuthorizeAttribute.SpecificInstructorAuthorize>();
         builder.Services.AddScoped<StudentAuthorizeAttribute.IStudentAuthorize, StudentAuthorizeAttribute.StudentAuthorize>();
-        builder.Services.AddScoped<SpecificStudentAuthorizeAttribute.ISpecificStudentAuthorize, SpecificStudentAuthorizeAttribute.SpecificStudentAuthorize>();
     }
 
     private static void ServiceDependencyInjection(WebApplicationBuilder builder)

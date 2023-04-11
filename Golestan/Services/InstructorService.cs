@@ -26,24 +26,24 @@ public class InstructorService : IInstructorService
         this.userService = userService;
     }
 
-    public IEnumerable<Instructor> List(/*int page, int number*/) => instructorRepository.GetAll();
-    public Instructor Create(InstructorInputDto dto)
+    public IEnumerable<InstructorOutputDto> List(/*int page, int number*/) => instructorRepository.GetAll().Select(instructor => instructor.OutputDto());
+    public InstructorOutputDto Create(InstructorInputDto dto)
     {
         var instructor = new Instructor();
         userService.CreateUserAspects(instructor, dto);
         instructorRepository.Insert(instructor);
         instructorRepository.Save();
-        return instructor;
+        return instructor.OutputDto();
     }
 
-    public Instructor Read(int instructorId) => instructorRepository.GetById(instructorId);
-    public Instructor Update(int id, InstructorInputDto dto)
+    public InstructorOutputDto Read(int instructorId) => instructorRepository.GetById(instructorId).OutputDto();
+    public InstructorOutputDto Update(int id, InstructorInputDto dto)
     {
-        var instructor = Read(id);
+        var instructor = instructorRepository.GetById(id);
         userService.CreateUserAspects(instructor, dto);
         instructorRepository.Update(instructor);
         instructorRepository.Save();
-        return instructor;
+        return instructor.OutputDto();
     }
 
     public void Delete(int instructorId)
@@ -77,13 +77,17 @@ public class InstructorService : IInstructorService
 
     public TokenOutputDto Login(string username, string password)
     {
-        if (username == null || password == null || !instructorRepository.ExistsByUsername(username)) throw new UsernameOrPasswordInvalidException();
+        checkAuthority(username, password);
+        var token = TokenGenerator.GenerateToken(Role.INSTRUCTOR, username);
+        TokenRepository.Insert(token);
+        return token.OutputDto();
+    }
+
+    private void checkAuthority(string username, string password)
+    {
+        if (!instructorRepository.ExistsByUsername(username)) throw new UsernameOrPasswordInvalidException();
         var instructor = instructorRepository.FindByUsername(username);
         if (instructor.Password != PasswordEncoder.Encode(password)) throw new UsernameOrPasswordInvalidException();
-        DateTime validUntil = new DateTime() + TimeSpan.FromMinutes(30);
-        string tokenValue = TokenGenerator.GenerateToken();
-        var token = new Token { Role = Role.INSTRUCTOR, UserName = username, ValidUntil = validUntil, Value = tokenValue };
-        TokenRepository.Insert(token);
-        return new TokenOutputDto() { Token = tokenValue, ValidUntil = validUntil };
+        if (TokenRepository.ExistsByUsername(username)) throw new ReLoginException();
     }
 }

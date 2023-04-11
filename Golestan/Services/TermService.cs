@@ -1,43 +1,47 @@
 
 using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
+using DataLayer.Models.DTOs.Output;
 using DataLayer.Repositories;
 using Golestan.Services.Interfaces;
+using Golestan.Utils;
 
 namespace Golestan.Services;
 
 public class TermService : ITermService {
     private readonly ITermRepository termRepository;
+    private readonly ILogger<TermService> logger;//todo check other github projects to add more features
 
-    public TermService(ITermRepository termRepository)
+    public TermService(ITermRepository termRepository, ILogger<TermService> logger)
     {
         this.termRepository = termRepository;
+        this.logger = logger;
     }
 
-    public IEnumerable<Term> List(/*int page, int number*/) 
+    public IEnumerable<TermOutputDto> List(/*int page, int number*/) 
     {
-        return termRepository.GetAll(/*page, number*/);
+        return termRepository.GetAll(/*page, number*/).Select(term => term.OutputDto());
     }
 
-    public Term Create(TermInputDto newTerm)
+    public TermOutputDto Create(TermInputDto newTerm)
     {
         var term = new Term { Title = newTerm.Title, Open = newTerm.Open.Value };
-        //log.info("Term with title: " + title + " created");
+        logger.LogInformation("Term with title: \" + title + \" created");
         termRepository.Insert(term);
         termRepository.Save();
-        return term;
+        return term.OutputDto();
     }
 
-    public Term Read(int termId) => termRepository.GetById(termId);
+    public TermOutputDto Read(int termId) => termRepository.GetById(termId).OutputDto();
 
-    public Term Update(int termId, TermInputDto newTerm)
+    public TermOutputDto Update(int termId, TermInputDto newTerm)
     {
-        var term = Read(termId);
+        var term = termRepository.GetById(termId);
         ChangeTitle(newTerm.Title, term);
         ChangeOpen(newTerm.Open, term);
         termRepository.Update(term);
         termRepository.Save();
-        return term;
+        return term.OutputDto();
     }
 
     private static void ChangeOpen(bool? open, Term term) {
@@ -57,6 +61,6 @@ public class TermService : ITermService {
     {
         termRepository.Delete(id);
         termRepository.Save();
-        //log.info("Term with title: " + newTerm.getTitle() + " Deleted");
+        logger.LogInformation("Term with title: \" + newTerm.getTitle() + \" Deleted");
     }
 }

@@ -1,14 +1,10 @@
-﻿using DataLayer.Enums;
-using DataLayer.Models;
-using DataLayer.Repositories;
+﻿using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Business.Exceptions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
-using PostSharp.Aspects;
-using PostSharp.Serialization;
 
-namespace Golestan.Aspects;
+namespace Golestan.Aspects.Authorize;
 
 public class SpecificAdminAuthorizeAttribute : ServiceFilterAttribute
 {
@@ -19,10 +15,10 @@ public class SpecificAdminAuthorizeAttribute : ServiceFilterAttribute
 
     public interface ISpecificAdminAuthorize : IActionFilter
     {
-        
+
     }
 
-    public class SpecificAdminAuthorize : IActionFilter
+    public class SpecificAdminAuthorize : ISpecificAdminAuthorize
     {
         private readonly IAdminRepository adminRepository;
 
@@ -33,8 +29,8 @@ public class SpecificAdminAuthorizeAttribute : ServiceFilterAttribute
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            var tokenValue = context.ActionArguments["token"].ToString();
-            var token = TokenRepository.GetById(tokenValue);
+            var rawToken = context.ActionArguments["token"].ToString();
+            var token = TokenRepository.GetById(rawToken);
             var id = (int)context.ActionArguments["id"];
             if (adminRepository.FindByUsername(token.UserName).Id != id) throw new UnAuthorizedException();
         }

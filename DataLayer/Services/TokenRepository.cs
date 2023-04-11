@@ -19,6 +19,8 @@ public static class TokenRepository
 
     public static bool ExistsById(string id) => tokens.ContainsKey(id);
 
+    public static bool ExistsByUsername(string username) => tokens.Values.Any(token => token.UserName == username);
+
 
     public static Token Insert(Token entity)
     {

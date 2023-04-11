@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Models.DTOs.Output;
-public class CourseSectionDtoLight
+public class TermDetailsDto : TermOutputDto
 {
-    public CourseSection CourseSection { get; init; }
-    public int NumberOfStudents { get; set; }
+    public double StudentAverage { get; init; }
 }
 

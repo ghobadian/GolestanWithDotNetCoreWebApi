@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DataLayer.Models.DTOs.Output;
 public class SummeryDto
 {
-    public List<TermOutputDto> TermDetails { get; init; }
+    public List<TermDetailsDto> TermDetails { get; init; }
     public double TotalAverage { get; init; }
 }
 

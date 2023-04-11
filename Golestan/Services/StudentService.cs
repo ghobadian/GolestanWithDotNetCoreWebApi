@@ -35,7 +35,7 @@ public class StudentService : IStudentService {
         this.userService = userService;
     }
 
-    public CourseSectionRegistration SignUpSection(Student student, CourseSection courseSection)
+    private CourseSectionRegistration SignUpSection(Student student, CourseSection courseSection)
     {
         var csr = new CourseSectionRegistration
         {
@@ -47,24 +47,24 @@ public class StudentService : IStudentService {
         return csr;
     }
 
-    public CourseSectionRegistration SignUpSection(int courseSectionId/*, [FromHeader] string token*/)
+    public CourseSectionRegistration SignUpSection(int courseSectionId, string token)
     {
-        string username = null;//todo
+        string username = TokenRepository.GetById(token).UserName;
         return SignUpSection(studentRepository.FindByUsername(username), courseSectionRepository.GetById(courseSectionId));
     }
 
-    public StudentAverageDto SeeScoresInSpecifiedTerm(int termId)
+    public StudentAverageDto SeeScoresInSpecifiedTerm(int termId, string token)
     {
-        string username = null;//todo
+        string username = TokenRepository.GetById(token).UserName;//todo
         var student = studentRepository.FindByUsername(username);
         var courseSections = student.CourseSectionRegistrations
             .Select(csr => csr.CourseSection)
             .Where(cs => cs.Term.Id == termId)
-            .Select(cs => new CourseSectionDto{
+            .Select(cs => new CourseSectionOutputDto{
                 Id = cs.Id,
                 CourseName = cs.Course.Title,
                 CourseUnits = cs.Course.Units, 
-                Instructor = new InstructorDto{Name = cs.Instructor.Name, Rank = cs.Instructor.Rank}
+                Instructor = new InstructorOutputDto{Name = cs.Instructor.Name, Rank = cs.Instructor.Rank}
             }).ToList();
         var average = student.CourseSectionRegistrations.Average(csr => csr.Score);
         return new StudentAverageDto{ Average = average, CourseSections = courseSections};
@@ -74,14 +74,14 @@ public class StudentService : IStudentService {
     {
 
         Student student = studentRepository.FindByUsername(TokenRepository.GetById(token).UserName);
-        //AtomicReference<Double> totalSum = new AtomicReference<>((double) 0);
+        //AtomicReference<Double> totalSum = new AtomicReference<>((double) 0);//todo remove all comments
         double totalSum = 0;
         IEnumerable<Term> terms = termRepository.GetAll();
-        var allTermDetails = new List<TermOutputDto>();
+        var allTermDetails = new List<TermDetailsDto>();
         foreach (var term in terms)
         {
             var averageInSpecifiedTerm = FindAverageByTerm(term, student);
-            var termDetails = new TermOutputDto { TermId = term.Id, TermTitle = term.Title, StudentAverage = averageInSpecifiedTerm };
+            var termDetails = new TermDetailsDto { Id = term.Id, Title = term.Title, StudentAverage = averageInSpecifiedTerm };
             totalSum += averageInSpecifiedTerm;
             allTermDetails.Add(termDetails);
         }
@@ -94,26 +94,26 @@ public class StudentService : IStudentService {
         courseSectionRegistrationRepository.FindByStudentIdAndTermId(student.Id, term.Id)
             .Average(csr => csr.Score);
 
-    public IEnumerable<Student> List() => studentRepository.GetAll();
+    public IEnumerable<StudentOutputDto> List() => studentRepository.GetAll().Select(student => student.OutputDto());
 
-    public Student Create(StudentInputDto dto)
+    public StudentOutputDto Create(StudentInputDto dto)
     {
         var student = new Student();
         userService.CreateUserAspects(student, dto);
         studentRepository.Insert(student);
         studentRepository.Save();
-        return student;
+        return student.OutputDto();
     }
 
-    public Student Read(int id) => studentRepository.GetById(id);
+    public StudentOutputDto Read(int id) => studentRepository.GetById(id).OutputDto();
 
-    public Student Update(int id, StudentInputDto dto)
+    public StudentOutputDto Update(int id, StudentInputDto dto)
     {
-        var student = Read(id);
+        var student = studentRepository.GetById(id);
         userService.CreateUserAspects(student, dto);
         studentRepository.Update(student);
         studentRepository.Save();
-        return student;
+        return student.OutputDto();
     }
 
     public void Delete(int studentId) {
@@ -128,14 +128,18 @@ public class StudentService : IStudentService {
 
     public TokenOutputDto Login(string username, string password)
     {
-        if (username == null || password == null || !studentRepository.ExistsByUsername(username)) throw new UsernameOrPasswordInvalidException();
+        CheckAuthority(username, password);
+        var token = TokenGenerator.GenerateToken(Role.STUDENT, username);
+        TokenRepository.Insert(token);
+        return token.OutputDto();
+    }
+
+    private void CheckAuthority(string username, string password)
+    {
+        if (!studentRepository.ExistsByUsername(username)) throw new UsernameOrPasswordInvalidException();
         var student = studentRepository.FindByUsername(username);
         if (student.Password != PasswordEncoder.Encode(password)) throw new UsernameOrPasswordInvalidException();
-        DateTime validUntil = new DateTime() + TimeSpan.FromMinutes(30);
-        string tokenValue = TokenGenerator.GenerateToken();
-        var token = new Token { Role = Role.STUDENT, UserName = username, ValidUntil = validUntil, Value = tokenValue };
-        TokenRepository.Insert(token);
-        return new TokenOutputDto() { Token = tokenValue, ValidUntil = validUntil };
-        //todo implement valid until and token generation
+        if (TokenRepository.ExistsByUsername(username)) throw new ReLoginException();
+        //todo remove above duplicate code
     }
 }

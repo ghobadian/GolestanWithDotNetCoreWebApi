@@ -5,6 +5,7 @@ using DataLayer.Models.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Services.Interfaces;
+using Golestan.Utils;
 
 namespace Golestan.Services;
 
@@ -29,20 +30,21 @@ public class CourseSectionService : ICourseSectionService
         this.instructorRepository = instructorRepository;
     }
 
-    public IEnumerable<CourseSection> List() => courseSectionRepository.GetAll();
+    public IEnumerable<CourseSectionOutputDto> List() => courseSectionRepository.GetAll().Select(cs => cs.OutputDto());
 
     public IEnumerable<CourseSection> List(int termId, string instructorUsername, string courseTitle/*, int page, int number*/) =>
         courseSectionRepository
             .FindAllByTermIdAndInstructorUsernameAndCourseTitle(termId, instructorUsername, courseTitle/*, PageRequest.of(page, number)*/);
 
-    public List<StudentDto> ListStudentsByCourseSection(int id) => 
+    public List<StudentScoreOutputDto> ListStudentsByCourseSection(int id) => 
         courseSectionRegistrationRepository.FindByCourseSectionId(id)
             .Select(GetStudentDetails).ToList();
 
-    private static StudentDto GetStudentDetails(CourseSectionRegistration csr) 
+    private static StudentScoreOutputDto GetStudentDetails(CourseSectionRegistration csr) 
     {
-        var student = csr.Student;
-        return new StudentDto { Id = student.Id, Name = student.Name, Number = student.PhoneNumber, Score = csr.Score };
+        StudentScoreOutputDto student = (StudentScoreOutputDto) csr.Student.OutputDto();
+        var sth  = student with { Score = csr.Score };
+        return new StudentScoreOutputDto { Id = student.Id, Name = student.Name, Number = student.PhoneNumber, Score = csr.Score };
     }
 
     public CourseSection Create(CourseSectionInputDto dto)

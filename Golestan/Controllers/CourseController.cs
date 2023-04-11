@@ -1,6 +1,7 @@
 using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.Users;
+using Golestan.Aspects.ExceptionHandling;
 using Golestan.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace Golestan.Controllers;
 
 [ApiController]
 [Route("/[controller]/[action]")]
+[HandleExceptions]
 public class CourseController : ControllerBase
 {
 

@@ -3,6 +3,8 @@ using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
 using DataLayer.Models.Users;
 using Golestan.Aspects;
+using Golestan.Aspects.Authorize;
+using Golestan.Aspects.ExceptionHandling;
 using Golestan.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +12,9 @@ namespace Golestan.Controllers;
 
 [ApiController]
 [Route("/[controller]/[action]")] 
-public class InstructorController {
+[HandleExceptions]
+public class InstructorController
+{
     public readonly InstructorService service;
 
     public InstructorController(InstructorService service) => this.service = service;

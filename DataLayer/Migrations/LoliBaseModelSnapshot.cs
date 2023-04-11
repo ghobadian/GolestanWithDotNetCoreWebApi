@@ -56,7 +56,7 @@ namespace DataLayer.Migrations
                     b.Property<int>("InstructorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TermId")
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -65,7 +65,7 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("InstructorId");
 
-                    b.HasIndex("TermId");
+                    b.HasIndex("Id");
 
                     b.ToTable("CourseSections");
                 });
@@ -249,7 +249,7 @@ namespace DataLayer.Migrations
 
                     b.HasOne("DataLayer.Models.Term", "Term")
                         .WithMany("CourseSections")
-                        .HasForeignKey("TermId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

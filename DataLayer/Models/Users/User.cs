@@ -23,7 +23,7 @@ namespace DataLayer.Models.Users
         public string Name { get; set; }
         
         [Required]
-        //unique
+        //todo unique
         public string NationalId { get; set; }
 
         [Required]

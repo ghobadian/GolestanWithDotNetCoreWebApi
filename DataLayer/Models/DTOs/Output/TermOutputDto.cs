@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DataLayer.Models.DTOs.Output;
 
-namespace DataLayer.Models.DTOs.Output;
 public class TermOutputDto
 {
-    public int TermId { get; init; }
-    public string TermTitle { get; init; }
-    public double StudentAverage { get; init; }
+    public int Id { get; init; }
+    public string Title { get; init; }
 }
-
