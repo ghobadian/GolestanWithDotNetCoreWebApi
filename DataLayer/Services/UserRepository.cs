@@ -13,29 +13,29 @@ using System.Numerics;
 
 namespace DataLayer.Services
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : IUserRepositoryLight
     {
-        private readonly LoliBase db;
-        public UserRepository(LoliBase db) => this.db = db;
+        private readonly IAdminRepository _adminRepository;
+        private readonly IInstructorRepository _instructorRepository;
+        private readonly IStudentRepository _studentRepository;
 
-        public bool ExistsByPhone(string phone) => 
-            db.Admins.Any(admin => admin.PhoneNumber == phone) || 
-            db.Instructors.Any(instructor => instructor.PhoneNumber == phone) ||
-            db.Students.Any(student => student.PhoneNumber == phone);
+        public UserRepository(IAdminRepository adminRepository, IInstructorRepository instructorRepository, IStudentRepository studentRepository)
+        {
+            _adminRepository = adminRepository;
+            _instructorRepository = instructorRepository;
+            _studentRepository = studentRepository;
+        }
 
-        public bool ExistsByUsername(string UserName) => 
-            db.Admins.Any(admin => admin.PhoneNumber == UserName) || 
-            db.Instructors.Any(instructor => instructor.PhoneNumber == UserName) || 
-            db.Students.Any(student => student.PhoneNumber == UserName);
+        public bool ExistsByPhone(string phone) =>
+            _adminRepository.ExistsByPhone(phone) || _instructorRepository.ExistsByPhone(phone) ||
+            _studentRepository.ExistsByPhone(phone);
+
+        public bool ExistsByUsername(string username) =>
+            _adminRepository.ExistsByUsername(username) || _instructorRepository.ExistsByUsername(username) ||
+            _studentRepository.ExistsByUsername(username);
 
         public bool ExistsByNationalId(string nationalId) =>
-            db.Admins.Any(admin => admin.PhoneNumber == nationalId) ||
-            db.Instructors.Any(instructor => instructor.PhoneNumber == nationalId) ||
-            db.Students.Any(student => student.PhoneNumber == nationalId);
-        
-        public void Dispose()
-        {
-            db.Dispose();
-        }
+            _adminRepository.ExistsByNationalId(nationalId) || _instructorRepository.ExistsByNationalId(nationalId) ||
+            _studentRepository.ExistsByNationalId(nationalId);
     }
 }

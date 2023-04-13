@@ -81,16 +81,19 @@ public class AdminService : IAdminService
     public void ActivateAdmin(int adminId)
     {
         adminRepository.Update(new Admin() { Id = adminId, Active = true });
+        adminRepository.Save();
     }
 
     public void ActivateInstructor(int instructorId)
     {
         instructorRepository.Update(new Instructor() { Id = instructorId, Active = true });
+        instructorRepository.Save();
     }
 
     public void ActivateStudent(int studentId)
     {
         studentRepository.Update(new Student() { Id = studentId, Active = true });
+        studentRepository.Save();
     }
 
 }

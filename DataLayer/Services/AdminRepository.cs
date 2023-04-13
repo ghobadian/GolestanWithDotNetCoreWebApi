@@ -75,8 +75,22 @@ public class AdminRepository : IAdminRepository
         db.Dispose();
     }
 
+    public bool ExistsByNationalId(string nationalId)
+    {
+        throw new NotImplementedException();
+    }
+
     public Admin FindByUsername(string UserName) => db.Admins.Single(admin => admin.UserName == UserName);
-    public bool ExistsByUsername(string UserName) => db.Admins.Any(admin => admin.UserName == UserName);
+    public void Activate(int id)
+    {
+        var admin = new Admin() { Id = id, Active = true };
+        db.Instructors.Attach(admin);
+        db.Entry(admin).Property(x => x.Active).IsModified = true;
+        Save();
+    }
+
+    public bool ExistsByUsername(string username) => db.Admins.Any(admin => admin.UserName == username);
+    public bool ExistsById(int id) => db.Admins.Any(admin => admin.Id == id);
     public bool ExistsByPhone(string phone) => db.Admins.Any(admin => admin.PhoneNumber == phone);
 }
 

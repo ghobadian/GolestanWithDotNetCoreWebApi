@@ -15,6 +15,7 @@ namespace DataLayer.Services
     public class InstructorRepository : IInstructorRepository
     {
         private readonly LoliBase db;
+        private readonly 
         public InstructorRepository(LoliBase db) => this.db = db;
 
         public bool Delete(int id)
@@ -83,5 +84,13 @@ namespace DataLayer.Services
         public bool ExistsById(int id) => db.Instructors.Any(instructor => instructor.Id == id);
         public bool ExistsByUsername(string username) => db.Instructors.Any(instructor => instructor.UserName == username);
         public Instructor FindByUsername(string username) => db.Instructors.Single(instructor => instructor.UserName == username);
+
+        public void Activate(int id)
+        {
+            var instructor = new Instructor() { Id = id, Active = true };
+            db.Instructors.Attach(instructor);
+            db.Entry(instructor).Property(x => x.Active).IsModified = true;
+            Save();
+        }
     }
 }

@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 
 namespace DataLayer.Repositories
 {
-    public interface IInstructorRepository : ICrudRepository<Instructor>
+    public interface IInstructorRepository : IUserRepository<Instructor>
     {
-        bool ExistsById(int id);
-        bool ExistsByUsername(string username);
-        Instructor FindByUsername(string username);
+        
     }
 }

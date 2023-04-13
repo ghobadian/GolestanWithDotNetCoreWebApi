@@ -1,17 +1,14 @@
-﻿using DataLayer.Models;
-using DataLayer.Models.Entities.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DataLayer.Models.Entities.Users;
 
-namespace DataLayer.Repositories
+namespace DataLayer.Repositories;
+
+public interface IUserRepository<T> : ICrudRepository<T>
 {
-    public interface IUserRepository : IDisposable
-    {
-        bool ExistsByPhone(string phone);
-        bool ExistsByUsername(string username);
-        bool ExistsByNationalId(string nationalId);
-    }
+    bool ExistsById(int id);
+    bool ExistsByPhone(string phone); 
+    bool ExistsByUsername(string username);
+    bool ExistsByNationalId(string  nationalId);
+    T FindByUsername(string username);
+    public void Activate(int id);
+    
 }

@@ -6,10 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Repositories;
-public interface IAdminRepository : ICrudRepository<Admin>
+public interface IAdminRepository : IUserRepository<Admin>
 {
-    Admin FindByUsername(string username);
-    bool ExistsByPhone(string phone);
-    bool ExistsByUsername(string username);
+    
 }
 

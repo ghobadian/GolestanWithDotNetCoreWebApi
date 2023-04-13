@@ -14,9 +14,9 @@ namespace Golestan.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository userRepository;
+    private readonly IUserRepositoryLight userRepository;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepositoryLight userRepository)
     {
         this.userRepository = userRepository;
     }

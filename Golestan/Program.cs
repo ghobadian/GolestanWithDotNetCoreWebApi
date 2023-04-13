@@ -99,6 +99,6 @@ public class Program
         builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
         builder.Services.AddScoped<IStudentRepository, StudentRepository>();
         builder.Services.AddScoped<ITermRepository, TermRepository>();
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IUserRepositoryLight, UserRepository>();
     }
 }
