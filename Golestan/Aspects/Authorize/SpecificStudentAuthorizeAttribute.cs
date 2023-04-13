@@ -24,9 +24,9 @@ public class SpecificStudentAuthorizeAttribute : ServiceFilterAttribute
 
     public class SpecificStudentAuthorize : ISpecificStudentAuthorize
     {
-        private readonly IStudentRepository studentRepository;
+        private readonly IUserRepository<User> studentRepository;
 
-        public SpecificStudentAuthorize(IStudentRepository studentRepository) => this.studentRepository = studentRepository;
+        public SpecificStudentAuthorize(IUserRepository<User> studentRepository) => this.studentRepository = studentRepository;
 
         [StudentAuthorize]
         public void OnActionExecuting(ActionExecutingContext context)

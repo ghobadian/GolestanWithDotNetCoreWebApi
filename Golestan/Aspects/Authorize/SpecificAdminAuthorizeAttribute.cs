@@ -1,4 +1,5 @@
-﻿using DataLayer.Repositories;
+﻿using DataLayer.Models.Entities.Users;
+using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Business.Exceptions;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -20,9 +21,9 @@ public class SpecificAdminAuthorizeAttribute : ServiceFilterAttribute
 
     public class SpecificAdminAuthorize : ISpecificAdminAuthorize
     {
-        private readonly IAdminRepository adminRepository;
+        private readonly IUserRepository<Admin> adminRepository;
 
-        public SpecificAdminAuthorize(IAdminRepository adminRepository)
+        public SpecificAdminAuthorize(IUserRepository<Admin> adminRepository)
         {
             this.adminRepository = adminRepository;
         }

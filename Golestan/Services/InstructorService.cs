@@ -13,11 +13,11 @@ using Golestan.Utils;
 namespace Golestan.Services;
 public class InstructorService : IInstructorService 
 {
-    private readonly IInstructorRepository instructorRepository;
+    private readonly IUserRepository<Instructor> instructorRepository;
     private readonly ICourseSectionRegistrationRepository csrRepository;
     private readonly IUserService userService;
 
-    public InstructorService(IInstructorRepository instructorRepository,
+    public InstructorService(IUserRepository<Instructor> instructorRepository,
         ICourseSectionRegistrationRepository csrRepository,
         IUserService userService)
     {

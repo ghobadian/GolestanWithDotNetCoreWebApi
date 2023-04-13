@@ -21,9 +21,9 @@ public class StudentAuthorizeAttribute : ServiceFilterAttribute
     }
     public class StudentAuthorize : IStudentAuthorize
     {
-        private readonly IStudentRepository studentRepository;
+        private readonly IUserRepository<User> studentRepository;
 
-        public StudentAuthorize(IStudentRepository studentRepository)
+        public StudentAuthorize(IUserRepository<User> studentRepository)
         {
             this.studentRepository = studentRepository;
         }

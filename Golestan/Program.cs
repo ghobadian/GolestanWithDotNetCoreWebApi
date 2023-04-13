@@ -1,6 +1,8 @@
 using DataLayer.Contexts;
 using DataLayer.Enums;
 using DataLayer.Models.DTOs;
+using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Aspects.Authorize;
@@ -92,13 +94,17 @@ public class Program
 
     private static void RepositoryDependencyInjection(WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+        //builder.Services.AddScoped<IAdminRepository, AdminRepository>();
         builder.Services.AddScoped<ICourseRepository, CourseRepository>();
         builder.Services.AddScoped<ICourseSectionRepository, CourseSectionRepository>();
         builder.Services.AddScoped<ICourseSectionRegistrationRepository, CourseSectionRegistrationRepository>();
-        builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
-        builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+        //builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
+        builder.Services.AddScoped<IUserRepository<User>, StudentRepository>();
         builder.Services.AddScoped<ITermRepository, TermRepository>();
-        builder.Services.AddScoped<IUserRepositoryLight, UserRepository>();
+        builder.Services.AddScoped<IAbstractUserRepository, AbstractUserRepository>();
+        builder.Services.AddScoped<IUserRepository<Admin>, UserRepository<Admin>>();
+        builder.Services.AddScoped<IUserRepository<Instructor>, UserRepository<Instructor>>();
+        builder.Services.AddScoped<IUserRepository<Student>, UserRepository<Student>>();
+
     }
 }

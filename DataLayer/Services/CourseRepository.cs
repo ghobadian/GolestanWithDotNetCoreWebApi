@@ -9,7 +9,7 @@ namespace DataLayer.Services
     public class CourseRepository : ICourseRepository
     {
         private readonly LoliBase db;
-        private readonly UserGeneralRepository<Course> ;
+        //private readonly UserRepository<Course> ;
         public CourseRepository(LoliBase db) => this.db = db;
 
         public IEnumerable<Course> GetAll(int pageNumber, int pageSize) => db.Courses.ToPagedList(pageNumber, pageSize);

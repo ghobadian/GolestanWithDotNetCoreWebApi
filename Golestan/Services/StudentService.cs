@@ -15,14 +15,14 @@ namespace Golestan.Services;
 
 public class StudentService : IStudentService {
     private readonly ICourseSectionRegistrationRepository csrRepository;
-    private readonly IStudentRepository studentRepository;
+    private readonly IUserRepository<User> studentRepository;
     private readonly ITermRepository termRepository;
     private readonly ICourseSectionRepository courseSectionRepository;
     private readonly ICourseSectionRegistrationRepository courseSectionRegistrationRepository;
     private readonly IUserService userService;
 
     public StudentService(ICourseSectionRegistrationRepository csrRepository, 
-        IStudentRepository studentRepository, 
+        IUserRepository<User> studentRepository, 
         ITermRepository termRepository, 
         ICourseSectionRepository courseSectionRepository, 
         ICourseSectionRegistrationRepository courseSectionRegistrationRepository, 

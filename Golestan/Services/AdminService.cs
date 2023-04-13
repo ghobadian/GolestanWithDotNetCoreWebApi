@@ -13,17 +13,17 @@ using Microsoft.VisualBasic;
 namespace Golestan.Services;
 public class AdminService : IAdminService
 {
-    private readonly IAdminRepository adminRepository;
-    private readonly IInstructorRepository instructorRepository;
-    private readonly IStudentRepository studentRepository;
+    private readonly IUserRepository<Instructor> instructorRepository;
+    private readonly IUserRepository<Admin> adminRepository;
+    private readonly IUserRepository<User> studentRepository;
     private readonly IUserService userService;
     private readonly ILogger<AdminService> logger;
 
 
-    public AdminService(IAdminRepository adminRepository,
+    public AdminService(IUserRepository<Admin> adminRepository,
         IUserService userService, 
-        IInstructorRepository instructorRepository, 
-        IStudentRepository studentRepository, ILogger<AdminService> logger)//todo
+        IUserRepository<Instructor> instructorRepository, 
+        IUserRepository<User> studentRepository, ILogger<AdminService> logger)//todo
     {
         this.adminRepository = adminRepository;
         this.userService = userService;

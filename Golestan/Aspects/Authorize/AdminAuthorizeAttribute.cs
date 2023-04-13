@@ -1,5 +1,6 @@
 ﻿using DataLayer.Contexts;
 using DataLayer.Enums;
+using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Business.Exceptions;
@@ -23,9 +24,9 @@ public class AdminAuthorizeAttribute : ServiceFilterAttribute
     public class AdminAuthorize : IAdminAuthorize
     {
 
-        private readonly IAdminRepository adminRepository;
+        private readonly IUserRepository<Admin> adminRepository;
 
-        public AdminAuthorize(IAdminRepository adminRepository)
+        public AdminAuthorize(IUserRepository<Admin> adminRepository)
         {
             this.adminRepository = adminRepository;
         }

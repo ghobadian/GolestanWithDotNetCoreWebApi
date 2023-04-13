@@ -15,14 +15,14 @@ public class CourseSectionService : ICourseSectionService
     private readonly ICourseSectionRepository courseSectionRepository;
     private readonly ICourseSectionRegistrationRepository courseSectionRegistrationRepository;
     private readonly ITermRepository termRepository;
-    private readonly IInstructorRepository instructorRepository;
+    private readonly IUserRepository<Instructor> instructorRepository;
     private readonly ILogger<CourseSectionService> logger;
 
     public CourseSectionService(ICourseSectionRepository courseSectionRepository,
         ITermRepository termRepository, 
         ICourseSectionRegistrationRepository courseSectionRegistrationRepository, 
         ICourseRepository courseRepository, 
-        IInstructorRepository instructorRepository, ILogger<CourseSectionService> logger)
+        IUserRepository<Instructor> instructorRepository, ILogger<CourseSectionService> logger)
     {
         this.courseSectionRepository = courseSectionRepository;
         this.termRepository = termRepository;

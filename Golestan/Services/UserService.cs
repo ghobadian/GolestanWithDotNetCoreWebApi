@@ -14,11 +14,11 @@ namespace Golestan.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepositoryLight userRepository;
+    private readonly IAbstractUserRepository abstractUserRepository;
 
-    public UserService(IUserRepositoryLight userRepository)
+    public UserService(IAbstractUserRepository abstractUserRepository)
     {
-        this.userRepository = userRepository;
+        this.abstractUserRepository = abstractUserRepository;
     }
 
     public void CreateUserAspects(User user, UserInputDto newUser)
@@ -32,7 +32,7 @@ public class UserService : IUserService
 
     private void UpdatePhoneNumber(User user, string? phone)
     {
-        if (phone == null || userRepository.ExistsByPhone(phone)) throw new Exception("invalid phone number");
+        if (phone == null || abstractUserRepository.ExistsByPhone(phone)) throw new Exception("invalid phone number");
         if (!Regex.IsMatch(phone, "^0?9\\d{9}$")) throw new InvalidPhoneNumberException();
         user.PhoneNumber = phone;
     }
@@ -47,7 +47,7 @@ public class UserService : IUserService
 
     private void UpdateUsername(User user, string? newUsername)
     {
-        if (newUsername == null || userRepository.ExistsByUsername(user.UserName)) throw new Exception("Try another username");
+        if (newUsername == null || abstractUserRepository.ExistsByUsername(user.UserName)) throw new Exception("Try another username");
         user.UserName = newUsername;
     }
 
@@ -59,7 +59,7 @@ public class UserService : IUserService
 
     private void UpdateNationalId(User user, string? nationalId)
     {
-        if (nationalId == null || userRepository.ExistsByNationalId(nationalId))
+        if (nationalId == null || abstractUserRepository.ExistsByNationalId(nationalId))
             throw new Exception("invalid national id");
         if (!Regex.IsMatch(nationalId, "^\\d{10}$")) throw new InvalidEmailException();
         user.NationalId = nationalId;

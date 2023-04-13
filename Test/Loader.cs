@@ -157,7 +157,7 @@ public static class Loader
         for(int i=0;i<10;i++) {
             var temp = "student"+ i;
             var student = new StudentInputDto(temp, temp + "A", temp, "0901254125" + i,
-                "541254687" + i);
+                "541254687" + i, Degree.BS);
             //var body = JsonConvert.SerializeObject(student);
             var response = _httpClient.PostAsJsonAsync("/student/create", student);
             var readAsStringAsync = response.Result.Content.ToString();

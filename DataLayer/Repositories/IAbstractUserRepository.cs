@@ -1,6 +1,6 @@
 ﻿namespace DataLayer.Repositories
 {
-    public interface IUserRepositoryLight
+    public interface IAbstractUserRepository
     {
         bool ExistsByPhone(string phone);
         bool ExistsByUsername(string username);
