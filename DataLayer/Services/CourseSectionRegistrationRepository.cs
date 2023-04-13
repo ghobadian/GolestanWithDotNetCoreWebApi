@@ -1,5 +1,4 @@
 ﻿using DataLayer.Repositories;
-using DataLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DataLayer.Contexts;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities.Users;
+using DataLayer.Models.Entities;
+using PagedList;
 
 namespace DataLayer.Services
 {
@@ -16,10 +17,7 @@ namespace DataLayer.Services
         private readonly LoliBase db;
         public CourseSectionRegistrationRepository(LoliBase db) => this.db = db;
 
-        public IEnumerable<CourseSectionRegistration> GetAll()
-        {
-            return db.CourseSectionRegistrations;
-        }
+        public IEnumerable<CourseSectionRegistration> GetAll(int pageNumber, int pageSize) => db.CourseSectionRegistrations.ToPagedList(pageNumber, pageSize);
 
         public CourseSectionRegistration GetById(int id)
         {

@@ -22,13 +22,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.13" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Ninject" Version="3.3.6" />
+    <PackageReference Include="PagedList" Version="1.17.0" />
     <PackageReference Include="PostSharp" Version="2023.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DataLayer\DataLayer.csproj" />
+    <InternalsVisibleTo Include="..\Test\Test.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,11 @@
-namespace DataLayer.Enums
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace DataLayer.Enums;
+
+[JsonConverter(typeof(StringEnumConverter))]
+public enum Degree
 {
-    public enum Degree
-    {
-        BS, MS, PHD
-    }
+    BS, MS, PHD
 }
+

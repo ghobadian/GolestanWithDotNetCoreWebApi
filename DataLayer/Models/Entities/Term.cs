@@ -1,15 +1,14 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace DataLayer.Models
+namespace DataLayer.Models.Entities
 {
-    public class Course
+    public class Term
     {
-        [Key] 
+        [Key]
         public int Id { get; set; }
-        [Required]
         public string Title { get; set; }
-        [Required]
-        public int Units { get; set; }
+        public bool Open { get; set; }
         public virtual List<CourseSection> CourseSections { get; set; }
     }
 }

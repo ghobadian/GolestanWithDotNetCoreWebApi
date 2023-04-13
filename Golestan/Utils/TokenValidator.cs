@@ -1,5 +1,5 @@
 ﻿using DataLayer.Enums;
-using DataLayer.Models;
+using DataLayer.Models.DTOs;
 using DataLayer.Services;
 using Golestan.Business.Exceptions;
 using Ninject.Activation;

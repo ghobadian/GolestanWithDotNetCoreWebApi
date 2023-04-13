@@ -1,5 +1,5 @@
 ﻿using DataLayer.Models.DTOs.Input;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities.Users;
 
 namespace Golestan.Services.Interfaces
 {

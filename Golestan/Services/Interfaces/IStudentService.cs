@@ -1,13 +1,14 @@
-﻿using DataLayer.Models;
-using DataLayer.Models.DTOs.Input;
+﻿using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Golestan.Services.Interfaces;
 public interface IStudentService : ICrudService<StudentInputDto, StudentOutputDto>
 {
-    CourseSectionRegistration SignUpSection(int courseSectionId, string token);
-    StudentAverageDto SeeScoresInSpecifiedTerm(int termId, string token);
+    CourseSectionRegistration SignUpSection(int courseSectionId, [FromHeader] string token);
+    StudentAverageDto SeeScoresInSpecifiedTerm(int termId, [FromHeader] string token);
     SummeryDto SeeSummery(string token);
     TokenOutputDto Login(string username, string password);
 

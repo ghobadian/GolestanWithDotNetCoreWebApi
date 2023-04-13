@@ -1,7 +1,6 @@
-
-using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
+using DataLayer.Models.Entities;
 using DataLayer.Repositories;
 using Golestan.Services.Interfaces;
 using Golestan.Utils;
@@ -18,9 +17,9 @@ public class TermService : ITermService {
         this.logger = logger;
     }
 
-    public IEnumerable<TermOutputDto> List(/*int page, int number*/) 
+    public IEnumerable<TermOutputDto> List(int pageNumber, int pageSize) 
     {
-        return termRepository.GetAll(/*page, number*/).Select(term => term.OutputDto());
+        return termRepository.GetAll(pageNumber, pageSize).Select(term => term.OutputDto());
     }
 
     public TermOutputDto Create(TermInputDto newTerm)

@@ -1,7 +1,7 @@
-using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Services.Interfaces;
@@ -16,27 +16,30 @@ public class CourseSectionService : ICourseSectionService
     private readonly ICourseSectionRegistrationRepository courseSectionRegistrationRepository;
     private readonly ITermRepository termRepository;
     private readonly IInstructorRepository instructorRepository;
+    private readonly ILogger<CourseSectionService> logger;
 
     public CourseSectionService(ICourseSectionRepository courseSectionRepository,
         ITermRepository termRepository, 
         ICourseSectionRegistrationRepository courseSectionRegistrationRepository, 
         ICourseRepository courseRepository, 
-        IInstructorRepository instructorRepository)
+        IInstructorRepository instructorRepository, ILogger<CourseSectionService> logger)
     {
         this.courseSectionRepository = courseSectionRepository;
         this.termRepository = termRepository;
         this.courseSectionRegistrationRepository = courseSectionRegistrationRepository;
         this.courseRepository = courseRepository;
         this.instructorRepository = instructorRepository;
+        this.logger = logger;
     }
 
-    public IEnumerable<CourseSectionOutputDto> List() => courseSectionRepository.GetAll().Select(cs => cs.OutputDto());
+    public IEnumerable<CourseSectionOutputDto> List(int pageNumber, int pageSize) =>
+        courseSectionRepository.GetAll(pageNumber, pageSize).Select(cs => cs.OutputDto());
 
-    public IEnumerable<CourseSection> List(int termId, string instructorUsername, string courseTitle/*, int page, int number*/) =>
+    public IEnumerable<CourseSection> List(int termId, string instructorUsername, string courseTitle, int pageNumber, int pageSize) =>
         courseSectionRepository
-            .FindAllByTermIdAndInstructorUsernameAndCourseTitle(termId, instructorUsername, courseTitle/*, PageRequest.of(page, number)*/);
+            .FindAllByTermIdAndInstructorUsernameAndCourseTitle(termId, instructorUsername, courseTitle, pageNumber, pageSize);
 
-    public List<StudentScoreOutputDto> ListStudentsByCourseSection(int id) => 
+    public List<StudentScoreOutputDto> ListStudentsByCourseSection(int id, int pageNumber, int pageSize) => 
         courseSectionRegistrationRepository.FindByCourseSectionId(id)
             .Select(GetStudentDetails).ToList();
 
@@ -46,13 +49,13 @@ public class CourseSectionService : ICourseSectionService
         return  student with { Score = csr.Score };
     }
 
-    public CourseSection Create(CourseSectionInputDto dto)
+    public CourseSectionOutputDto Create(CourseSectionInputDto dto)
     {
         var courseSection = BuildCourseSection(dto.CourseId, dto.InstructorId, dto.TermId);
-        //log.info("CourseSection " + courseSection + "created");
+        logger.LogInformation("CourseSection \" + courseSection + \"created");;
         var insertedCourseSection = courseSectionRepository.Insert(courseSection);
         courseSectionRepository.Save();
-        return insertedCourseSection;
+        return insertedCourseSection.OutputDto();
     }
 
     private CourseSection BuildCourseSection(int courseId, int instructorId, int termId) => 
@@ -60,17 +63,11 @@ public class CourseSectionService : ICourseSectionService
         { Course = courseRepository.GetById(courseId), 
             Instructor = instructorRepository.GetById(instructorId),
             Term = termRepository.GetById(termId)
-
         };
 
-    public CourseSectionDtoLight Read(int id)
-    {
-        var courseSection = courseSectionRepository.GetById(id);
-        var numberOfStudents = courseSection.CourseSectionRegistrations.Count;
-        return new CourseSectionDtoLight { CourseSection = courseSection, NumberOfStudents = numberOfStudents };
-    }
+    public CourseSectionOutputDto Read(int id) => courseSectionRepository.GetById(id).OutputDto();
 
-    public CourseSection Update(int id, CourseSectionInputDto dto)
+    public CourseSectionOutputDto Update(int id, CourseSectionInputDto dto)
     {
         var courseSection = courseSectionRepository.GetById(id);
         UpdateTerm(dto.TermId, courseSection);
@@ -78,7 +75,7 @@ public class CourseSectionService : ICourseSectionService
         UpdateInstructor(dto.InstructorId, courseSection);
         courseSectionRepository.Update(courseSection);
         courseSectionRepository.Save();
-        return courseSection;
+        return courseSection.OutputDto();
     }
 
     private void UpdateInstructor(int instructorId, CourseSection courseSection)
@@ -104,7 +101,7 @@ public class CourseSectionService : ICourseSectionService
 
     public void Delete(int id)
     {
-        //log.info("CourseSection " + service + " Deleted");
+        logger.LogInformation("CourseSection \" + service + \" Deleted");
         courseSectionRepository.Delete(id);
         courseSectionRepository.Save();
     }

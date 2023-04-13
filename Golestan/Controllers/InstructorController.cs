@@ -1,39 +1,23 @@
-using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
-using DataLayer.Models.Users;
-using Golestan.Aspects;
+using DataLayer.Models.Entities;
+using DataLayer.Services;
 using Golestan.Aspects.Authorize;
 using Golestan.Aspects.ExceptionHandling;
 using Golestan.Services;
+using Golestan.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Golestan.Controllers;
 
 [ApiController]
-[Route("/[controller]/[action]")] 
+[Route("/[controller]/[action]")]
 [HandleExceptions]
-public class InstructorController
+public class InstructorController : ControllerBase, ICrudController<InstructorInputDto, InstructorOutputDto>
 {
-    public readonly InstructorService service;
+    public readonly IInstructorService service;
 
-    public InstructorController(InstructorService service) => this.service = service;
-
-    [HttpGet]
-    [InstructorAuthorize]
-    public IEnumerable<Instructor> List(/*int page, */ /*int number*/string token) => service.List();
-
-    [HttpGet("{id:int}")]
-    [InstructorAuthorize, SpecificInstructorAuthorize]
-    public Instructor Read(int id, [FromHeader] string token) => service.Read(id);
-
-    [HttpDelete("{id:int}")]
-    [InstructorAuthorize, SpecificInstructorAuthorize]
-    public void Delete(int id, [FromHeader] string token) => service.Delete(id);
-    
-    [HttpPut("{id:int}")]
-    [InstructorAuthorize, SpecificInstructorAuthorize]
-    public Instructor Update(int id, InstructorInputDto dto, [FromHeader] string token) => service.Update(id, dto);
+    public InstructorController(IInstructorService service) => this.service = service;
 
     [HttpPost("{courseSectionId:int}/{studentId:int}/{score:double}")]
     
@@ -47,4 +31,23 @@ public class InstructorController
 
     [HttpPost]
     public TokenOutputDto Login([FromHeader] string username, [FromHeader] string password) => service.Login(username, password);
+
+    [HttpGet]
+    [InstructorAuthorize]
+    public IEnumerable<InstructorOutputDto> List([FromHeader] string token, int pageNumber = 1, int pageSize = 100) => service.List(pageNumber, pageSize);
+
+    [HttpPost]
+    public InstructorOutputDto Create([FromBody] InstructorInputDto dto, [FromHeader] string token) => service.Create(dto);
+
+    [HttpGet("{id:int}")]
+    [SpecificInstructorAuthorize]
+    public InstructorOutputDto Read(int id, [FromHeader] string token) => service.Read(id);
+
+    [HttpPut]
+    [SpecificInstructorAuthorize]
+    public InstructorOutputDto Update(int id, [FromBody] InstructorInputDto dto, [FromHeader] string token) => service.Update(id, dto);
+
+    [HttpDelete]
+    [SpecificInstructorAuthorize]
+    public void Delete(int id, [FromHeader] string token) => service.Delete(id);
 }

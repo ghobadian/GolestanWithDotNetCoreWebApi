@@ -1,8 +1,10 @@
-using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
+using DataLayer.Models.DTOs.Output;
+using DataLayer.Models.Entities;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Services.Interfaces;
+using Golestan.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Golestan.Services;
@@ -10,44 +12,35 @@ namespace Golestan.Services;
 public class CourseService : ICourseService
 {
     private readonly ICourseRepository courseRepository;
+    private readonly ILogger<Course> logger;
 
-    public CourseService(ICourseRepository courseRepository)
+    public CourseService(ICourseRepository courseRepository, ILogger<Course> logger)
     {
         this.courseRepository = courseRepository;
+        this.logger = logger;
     }
 
-    public IEnumerable<Course> List()
-    {
-        return courseRepository.GetAll();
-    }
+    public IEnumerable<CourseOutputDto> List(int pageNumber, int pageSize) => courseRepository.GetAll(pageNumber, pageSize).Select(course => course.OutputDto());
 
-    //public List<Course> List(int page, int number)
-    //{
-    //    return repo.GetAll(page, number);
-    //}
-
-    public Course Create(CourseInputDto dto)
+    public CourseOutputDto Create(CourseInputDto dto)
     {
         Course course = new() { Units = dto.Units.Value, Title = dto.Title};
-        //log.info("Course " + course.getTitle() + " created");
+        logger.LogInformation("Course \" + course.getTitle() + \" created");
         courseRepository.Insert(course);
         courseRepository.Save();
-        return course;
+        return course.OutputDto();
     }
 
-    public Course Read(int id)
-    {
-        return courseRepository.GetById(id);
-    }
+    public CourseOutputDto Read(int id) => courseRepository.GetById(id).OutputDto();
 
-    public Course Update(int id, CourseInputDto dto)
+    public CourseOutputDto Update(int id, CourseInputDto dto)
     {
         Course course = courseRepository.GetById(id);
         UpdateTitle(dto.Title, course);
         UpdateUnits(dto.Units, course);
         var updatedCourse = courseRepository.Update(course);
         courseRepository.Save();
-        return updatedCourse;
+        return updatedCourse.OutputDto();
     }
 
     private static void UpdateUnits(int? units, Course course)
@@ -68,10 +61,9 @@ public class CourseService : ICourseService
 
     public void Delete(int courseId)
     {
-
         courseRepository.Delete(courseId);
         courseRepository.Save();
-        //log.info("Course " + course.getTitle() + " Deleted");
+        logger.LogInformation("Course \" + course.getTitle() + \" Deleted");
     }
 }
 

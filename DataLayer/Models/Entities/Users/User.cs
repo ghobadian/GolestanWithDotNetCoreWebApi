@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
-namespace DataLayer.Models.Users
+namespace DataLayer.Models.Entities.Users
 {
     public abstract class User
     {
@@ -18,12 +18,11 @@ namespace DataLayer.Models.Users
 
         [Required]
         public string Password { get; set; }
-        
+
         [Required]
         public string Name { get; set; }
-        
+
         [Required]
-        //todo unique
         public string NationalId { get; set; }
 
         [Required]

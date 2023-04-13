@@ -1,14 +1,15 @@
 
 using DataLayer.Enums;
-using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Business.Exceptions;
 using Golestan.Services.Interfaces;
 using Golestan.Utils;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Golestan.Services;
 
@@ -47,46 +48,41 @@ public class StudentService : IStudentService {
         return csr;
     }
 
-    public CourseSectionRegistration SignUpSection(int courseSectionId, string token)
+    public CourseSectionRegistration SignUpSection(int courseSectionId, [FromHeader] string token)
     {
-        string username = TokenRepository.GetById(token).UserName;
+        string username = TokenRepository.GetById(token).Username;
         return SignUpSection(studentRepository.FindByUsername(username), courseSectionRepository.GetById(courseSectionId));
     }
 
-    public StudentAverageDto SeeScoresInSpecifiedTerm(int termId, string token)
+    public StudentAverageDto SeeScoresInSpecifiedTerm(int termId, [FromHeader] string token)
     {
-        string username = TokenRepository.GetById(token).UserName;//todo
+        string username = TokenRepository.GetById(token).Username;//todo
         var student = studentRepository.FindByUsername(username);
         var courseSections = student.CourseSectionRegistrations
             .Select(csr => csr.CourseSection)
             .Where(cs => cs.Term.Id == termId)
-            .Select(cs => new CourseSectionOutputDto{
-                Id = cs.Id,
-                CourseName = cs.Course.Title,
-                CourseUnits = cs.Course.Units, 
-                Instructor = new InstructorOutputDto{Name = cs.Instructor.Name, Rank = cs.Instructor.Rank}
-            }).ToList();
+            .Select(cs => new CourseSectionOutputDto(cs.Id, cs.Course.Title, cs.Course.Units, cs.Instructor.OutputDto(),
+                cs.CourseSectionRegistrations.Count)).ToList();
         var average = student.CourseSectionRegistrations.Average(csr => csr.Score);
-        return new StudentAverageDto{ Average = average, CourseSections = courseSections};
+        return new StudentAverageDto(average, courseSections);
     }
 
     public SummeryDto SeeSummery(string token)
     {
 
-        Student student = studentRepository.FindByUsername(TokenRepository.GetById(token).UserName);
-        //AtomicReference<Double> totalSum = new AtomicReference<>((double) 0);//todo remove all comments
+        Student student = studentRepository.FindByUsername(TokenRepository.GetById(token).Username);
         double totalSum = 0;
         IEnumerable<Term> terms = termRepository.GetAll();
         var allTermDetails = new List<TermDetailsDto>();
         foreach (var term in terms)
         {
             var averageInSpecifiedTerm = FindAverageByTerm(term, student);
-            var termDetails = new TermDetailsDto { Id = term.Id, Title = term.Title, StudentAverage = averageInSpecifiedTerm };
+            var termDetails = new TermDetailsDto(term.Id, term.Title, averageInSpecifiedTerm);
             totalSum += averageInSpecifiedTerm;
             allTermDetails.Add(termDetails);
         }
 
-        return new SummeryDto { TermDetails = allTermDetails, TotalAverage = totalSum / terms.Count() };
+        return new SummeryDto(allTermDetails, totalSum / terms.Count());
     }
 
 
@@ -94,15 +90,22 @@ public class StudentService : IStudentService {
         courseSectionRegistrationRepository.FindByStudentIdAndTermId(student.Id, term.Id)
             .Average(csr => csr.Score);
 
-    public IEnumerable<StudentOutputDto> List() => studentRepository.GetAll().Select(student => student.OutputDto());
+    public IEnumerable<StudentOutputDto> List(int pageNumber, int pageSize) => studentRepository.GetAll(pageNumber, pageSize).Select(student => student.OutputDto());
 
     public StudentOutputDto Create(StudentInputDto dto)
     {
         var student = new Student();
         userService.CreateUserAspects(student, dto);
+        UpdateDegree(student, dto);
         studentRepository.Insert(student);
         studentRepository.Save();
         return student.OutputDto();
+    }
+
+    private void UpdateDegree(Student student, StudentInputDto dto)
+    {
+        if (dto.Degree == null) return;
+        student.Degree = dto.Degree.Value;
     }
 
     public StudentOutputDto Read(int id) => studentRepository.GetById(id).OutputDto();
@@ -111,6 +114,7 @@ public class StudentService : IStudentService {
     {
         var student = studentRepository.GetById(id);
         userService.CreateUserAspects(student, dto);
+        UpdateDegree(student, dto);
         studentRepository.Update(student);
         studentRepository.Save();
         return student.OutputDto();

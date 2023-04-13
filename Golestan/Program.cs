@@ -1,29 +1,23 @@
-using System.Text;
-using AutoMapper;
 using DataLayer.Contexts;
-using DataLayer.Models;
-using DataLayer.Models.Users;
+using DataLayer.Enums;
+using DataLayer.Models.DTOs;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Aspects.Authorize;
 using Golestan.Aspects.ExceptionHandling;
 using Golestan.Services;
 using Golestan.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
-namespace Golestan
+namespace Golestan;
+
+public class Program
 {
-    public class Program
-{
+    public static WebApplicationBuilder builder;
     public static void Main(string[] args)
     {
 
-        var builder = WebApplication.CreateBuilder(args);
+        builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
 
@@ -31,7 +25,7 @@ namespace Golestan
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddDbContext<LoliBase>(options => 
+        builder.Services.AddDbContext<LoliBase>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("Lolita")));
         DependencyInjection(builder);
 
@@ -41,7 +35,12 @@ namespace Golestan
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                //c.RoutePrefix = "";
+            });
+            TokenRepository.Insert(new Token("token", DateTime.MaxValue, Role.ADMIN, "admin"));
         }
 
         app.UseHttpsRedirection();
@@ -57,7 +56,7 @@ namespace Golestan
     }
 
 
-    private static void DependencyInjection(WebApplicationBuilder builder) 
+    private static void DependencyInjection(WebApplicationBuilder builder)
     {
         RepositoryDependencyInjection(builder);
         ServiceDependencyInjection(builder);
@@ -102,5 +101,4 @@ namespace Golestan
         builder.Services.AddScoped<ITermRepository, TermRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
     }
-}
 }

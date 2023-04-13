@@ -1,7 +1,7 @@
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities.Users;
 using System.ComponentModel.DataAnnotations;
 
-namespace DataLayer.Models
+namespace DataLayer.Models.Entities
 {
     public class CourseSectionRegistration
     {

@@ -31,7 +31,8 @@ public class StudentAuthorizeAttribute : ServiceFilterAttribute
         public void OnActionExecuting(ActionExecutingContext context)
         {
             var token = TokenValidator.Validate(context.ActionArguments["token"]?.ToString(), Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN);
-            if (!studentRepository.FindByUsername(token.UserName).Active) throw new InactiveUserException();
+            if (token.Role == Role.ADMIN || token.Role == Role.INSTRUCTOR) return;
+            if (!studentRepository.FindByUsername(token.Username).Active) throw new InactiveUserException();
         }
 
         public void OnActionExecuted(ActionExecutedContext context) { }

@@ -9,4 +9,4 @@ using System.Threading.Tasks;
 namespace DataLayer.Models.DTOs.Input;
 
 public record InstructorInputDto(string? Username, string? Password, string? Name, string? Phone, string? NationalId,
-    Rank Rank) : UserInputDto(Username, Password, Name, Phone, NationalId);
+    Rank? Rank) : UserInputDto(Username, Password, Name, Phone, NationalId);

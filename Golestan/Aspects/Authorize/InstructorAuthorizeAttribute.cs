@@ -33,7 +33,8 @@ public class InstructorAuthorizeAttribute : ServiceFilterAttribute
         public void OnActionExecuting(ActionExecutingContext context)
         {
             var token = TokenValidator.Validate(context.ActionArguments["token"]?.ToString(), Role.INSTRUCTOR, Role.ADMIN);
-            if (!instructorRepository.FindByUsername(token.UserName).Active) throw new InactiveUserException();
+            if (token.Role == Role.ADMIN) return;
+            if (!instructorRepository.FindByUsername(token.Username).Active) throw new InactiveUserException();
         }
 
         public void OnActionExecuted(ActionExecutedContext context) { }

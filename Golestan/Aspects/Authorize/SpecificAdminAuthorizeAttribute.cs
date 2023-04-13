@@ -27,12 +27,13 @@ public class SpecificAdminAuthorizeAttribute : ServiceFilterAttribute
             this.adminRepository = adminRepository;
         }
 
+        [AdminAuthorize]
         public void OnActionExecuting(ActionExecutingContext context)
         {
             var rawToken = context.ActionArguments["token"].ToString();
             var token = TokenRepository.GetById(rawToken);
             var id = (int)context.ActionArguments["id"];
-            if (adminRepository.FindByUsername(token.UserName).Id != id) throw new UnAuthorizedException();
+            if (adminRepository.FindByUsername(token.Username).Id != id) throw new UnAuthorizedException();
         }
 
         public void OnActionExecuted(ActionExecutedContext context) { }

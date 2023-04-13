@@ -1,5 +1,5 @@
-﻿using DataLayer.Models;
-using DataLayer.Models.Users;
+﻿using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

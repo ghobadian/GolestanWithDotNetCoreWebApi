@@ -1,6 +1,8 @@
-using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
-using DataLayer.Models.Users;
+using DataLayer.Models.DTOs.Output;
+using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
+using Golestan.Aspects.Authorize;
 using Golestan.Aspects.ExceptionHandling;
 using Golestan.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -10,34 +12,30 @@ namespace Golestan.Controllers;
 [ApiController]
 [Route("/[controller]/[action]")]
 [HandleExceptions]
-public class CourseController : ControllerBase
+public class CourseController : ControllerBase , ICrudController<CourseInputDto, CourseOutputDto>
 {
 
     public readonly ICourseService service;
     public CourseController(ICourseService service) => this.service = service;
 
-    //public readonly CourseSecurityService securityService;
-
-
-    //public List<Course> List(int page, int number)
-    //{
-    //	return service.List(page, number);
-    //}
-
     [HttpGet]
-    public IEnumerable<Course> List() => service.List();
+    public IEnumerable<CourseOutputDto> List([FromHeader] string token, int pageNumber = 1, int pageSize = 100) => service.List(pageNumber, pageSize);
 
     [HttpPost]
-    public Course Create(CourseInputDto dto) => service.Create(dto);
+    [InstructorAuthorize]
+    public CourseOutputDto Create([FromBody] CourseInputDto dto, [FromHeader] string token) => service.Create(dto);
 
     [HttpGet("{id:int}")]
-    public Course Read(int id) => service.Read(id);
+    [StudentAuthorize]
+    public CourseOutputDto Read(int courseId, [FromHeader] string token) => service.Read(courseId);
 
     [HttpPut("{id:int}")]
-    public Course Update(int id, CourseInputDto dto) => service.Update(id, dto);
+    [SpecificInstructorAuthorize]
+    public CourseOutputDto Update(int courseId, [FromBody] CourseInputDto dto, [FromHeader] string token) => service.Update(courseId, dto);
 
 
     [HttpDelete("{id:int}")]
-    public void Delete(int id) => service.Delete(id);
+    [AdminAuthorize]
+    public void Delete(int courseId, [FromHeader] string token) => service.Delete(courseId);
 }
 

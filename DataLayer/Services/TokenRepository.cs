@@ -1,30 +1,34 @@
 ﻿using DataLayer.Contexts;
 using DataLayer.Enums;
-using DataLayer.Models;
+using DataLayer.Models.DTOs;
 using DataLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
+using PagedList;
 
 namespace DataLayer.Services;
 
 public static class TokenRepository
 {
-    private static readonly Dictionary<string, Token> tokens = new();
+    private static readonly Dictionary<string, Token> Tokens = new();
 
 
-    public static IEnumerable<Token> GetAll() => tokens.Values;
+    
 
-    public static Token GetById(string id) => tokens[id];
 
-    public static bool Delete(string id) => tokens.Remove(id);
+    public static IEnumerable<Token> GetAll(int pageNumber, int pageSize) => Tokens.Values.ToPagedList(pageNumber, pageSize);
 
-    public static bool ExistsById(string id) => tokens.ContainsKey(id);
+    public static Token GetById(string id) => Tokens[id];
 
-    public static bool ExistsByUsername(string username) => tokens.Values.Any(token => token.UserName == username);
+    public static bool Delete(string id) => Tokens.Remove(id);
+
+    public static bool ExistsById(string id) => Tokens.ContainsKey(id);
+
+    public static bool ExistsByUsername(string username) => Tokens.Values.Any(token => token.Username == username);
 
 
     public static Token Insert(Token entity)
     {
-        tokens.Add(entity.Value, entity);
+        Tokens.Add(entity.Value, entity);
         return entity;
     }
 }

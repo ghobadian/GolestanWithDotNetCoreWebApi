@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataLayer.Contexts;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
+using PagedList;
 
 namespace DataLayer.Services;
 public class AdminRepository : IAdminRepository
@@ -14,7 +15,7 @@ public class AdminRepository : IAdminRepository
     private readonly LoliBase db;
     public AdminRepository(LoliBase db) => this.db = db;
 
-    public IEnumerable<Admin> GetAll() => db.Admins;
+    public IEnumerable<Admin> GetAll(int pageNumber, int pageSize) => db.Admins.ToPagedList(pageNumber, pageSize);
 
     public Admin GetById(int id) => db.Admins.Single(entity => entity.Id == id);
 

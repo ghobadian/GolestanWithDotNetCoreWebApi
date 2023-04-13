@@ -1,4 +1,4 @@
-﻿using DataLayer.Models;
+﻿using DataLayer.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace DataLayer.Repositories
     {
         public IEnumerable<CourseSection> FindByTerm(Term term);
         public bool ExistsByIdAndTerm(int id, Term term);
-        public IEnumerable<CourseSection> FindAllByTermIdAndInstructorUsernameAndCourseTitle(int termId, string username, string courseTitle);
+        public IEnumerable<CourseSection> FindAllByTermIdAndInstructorUsernameAndCourseTitle(int termId, string username, string courseTitle, int pageNumber, int pageSize);
         public IEnumerable<CourseSection> FindByInstructorId(int instructorId);
 
     }

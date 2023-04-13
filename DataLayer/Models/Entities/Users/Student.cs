@@ -2,7 +2,7 @@ using DataLayer.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DataLayer.Models.Users
+namespace DataLayer.Models.Entities.Users
 {
     public class Student : User
     {
@@ -12,6 +12,6 @@ namespace DataLayer.Models.Users
         [Required]
         public DateOnly StartDate { get; set; }
 
-        public virtual List<CourseSectionRegistration> CourseSectionRegistrations { get;} = new List<CourseSectionRegistration>();
+        public virtual List<CourseSectionRegistration> CourseSectionRegistrations { get; } = new List<CourseSectionRegistration>();
     }
 }

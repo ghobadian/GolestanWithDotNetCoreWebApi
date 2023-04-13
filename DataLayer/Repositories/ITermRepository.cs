@@ -1,4 +1,4 @@
-﻿using DataLayer.Models;
+﻿using DataLayer.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +9,7 @@ namespace DataLayer.Repositories
 {
     public interface ITermRepository : ICrudRepository<Term>
     {
+        IEnumerable<Term> GetAll();
         bool ExistsByTitle(string title);
         bool ExistsById(int id);
     }

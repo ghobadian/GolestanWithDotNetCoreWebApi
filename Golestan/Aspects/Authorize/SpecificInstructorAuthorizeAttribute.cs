@@ -27,23 +27,30 @@ public class SpecificInstructorAuthorizeAttribute : ServiceFilterAttribute
         private readonly IInstructorRepository instructorRepository;
 
         public SpecificInstructorAuthorize(IInstructorRepository instructorRepository) => this.instructorRepository = instructorRepository;
-
+        
+        [InstructorAuthorize]
         public void OnActionExecuting(ActionExecutingContext context)
         {
             var rawToken = context.ActionArguments["token"].ToString();
             var token = TokenRepository.GetById(rawToken);
             if (token.Role == Role.ADMIN) return;
-            //todo check what else is inside the context
-            var instructor = instructorRepository.FindByUsername(token.UserName);
+            var instructor = instructorRepository.FindByUsername(token.Username);
             if (context.ActionArguments.ContainsKey("id"))
             {
                 var id = (int)context.ActionArguments["id"];
                 if (instructor.Id != id) throw new UnAuthorizedException();
             }
-            else if (context.ActionArguments.ContainsKey("courseSectionId"))
+            if (context.ActionArguments.ContainsKey("courseSectionId"))
             {
                 var courseSectionId = (int)context.ActionArguments["courseSectionId"];
                 if (instructor.CourseSections.Select(cs => cs.Id).All(id => id != courseSectionId)) throw new UnAuthorizedException();
+            }
+
+            if (context.ActionArguments.ContainsKey("courseId"))
+            {
+                var courseId = (int) context.ActionArguments["courseId"];
+                if (instructor.CourseSections.Select(cs => cs.Course).All(course => course.Id != courseId))
+                    throw new UnAuthorizedException();
             }
         }
 

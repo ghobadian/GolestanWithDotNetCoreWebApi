@@ -33,7 +33,7 @@ public class AdminAuthorizeAttribute : ServiceFilterAttribute
         public void OnActionExecuting(ActionExecutingContext context)
         {
             var token = TokenValidator.Validate(context.ActionArguments["token"]?.ToString(), Role.ADMIN);
-            if (!adminRepository.FindByUsername(token.UserName).Active) throw new InactiveUserException();
+            if (!adminRepository.FindByUsername(token.Username).Active) throw new InactiveUserException();
 
         }
 

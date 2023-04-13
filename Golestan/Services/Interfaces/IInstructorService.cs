@@ -1,8 +1,8 @@
 ﻿using DataLayer.Enums;
-using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
 

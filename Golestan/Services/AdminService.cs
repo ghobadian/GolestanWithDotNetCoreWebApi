@@ -2,7 +2,7 @@
 using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Business.Exceptions;
@@ -32,10 +32,7 @@ public class AdminService : IAdminService
         this.logger = logger;
     }
 
-    public IEnumerable<AdminOutputDto> List(/*int page, int number*/)
-    {
-        return adminRepository.GetAll().Select(admin => admin.OutputDto());
-    }
+    public IEnumerable<AdminOutputDto> List(int pageNumber, int pageSize) => adminRepository.GetAll(pageNumber, pageSize).Select(admin => admin.OutputDto());
 
     public AdminOutputDto Create(AdminInputDto newAdmin)    
     {

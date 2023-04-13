@@ -1,9 +1,9 @@
 
 using DataLayer.Enums;
-using DataLayer.Models;
 using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Business.Exceptions;
@@ -26,11 +26,12 @@ public class InstructorService : IInstructorService
         this.userService = userService;
     }
 
-    public IEnumerable<InstructorOutputDto> List(/*int page, int number*/) => instructorRepository.GetAll().Select(instructor => instructor.OutputDto());
+    public IEnumerable<InstructorOutputDto> List(int pageNumber, int pageSize) => instructorRepository.GetAll(pageNumber, pageSize).Select(instructor => instructor.OutputDto());
     public InstructorOutputDto Create(InstructorInputDto dto)
     {
         var instructor = new Instructor();
         userService.CreateUserAspects(instructor, dto);
+        UpdateRank(instructor, dto);
         instructorRepository.Insert(instructor);
         instructorRepository.Save();
         return instructor.OutputDto();
@@ -41,9 +42,16 @@ public class InstructorService : IInstructorService
     {
         var instructor = instructorRepository.GetById(id);
         userService.CreateUserAspects(instructor, dto);
+        UpdateRank(instructor, dto);
         instructorRepository.Update(instructor);
         instructorRepository.Save();
         return instructor.OutputDto();
+    }
+
+    private void UpdateRank(Instructor instructor, InstructorInputDto dto)
+    {
+        if (dto.Rank == null) return;
+        instructor.Rank = dto.Rank.Value;
     }
 
     public void Delete(int instructorId)
@@ -89,5 +97,6 @@ public class InstructorService : IInstructorService
         var instructor = instructorRepository.FindByUsername(username);
         if (instructor.Password != PasswordEncoder.Encode(password)) throw new UsernameOrPasswordInvalidException();
         if (TokenRepository.ExistsByUsername(username)) throw new ReLoginException();
+        if (!instructor.Active) throw new InactiveUserException();
     }
 }

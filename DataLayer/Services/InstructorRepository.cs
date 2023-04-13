@@ -1,5 +1,4 @@
 ﻿using DataLayer.Repositories;
-using DataLayer.Models.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DataLayer.Contexts;
 using DataLayer.Models;
+using DataLayer.Models.Entities.Users;
+using PagedList;
 
 namespace DataLayer.Services
 {
@@ -40,10 +41,7 @@ namespace DataLayer.Services
             db.Dispose();
         }
 
-        public IEnumerable<Instructor> GetAll()
-        {
-            return db.Instructors;
-        }
+        public IEnumerable<Instructor> GetAll(int pageNumber, int pageSize) => db.Instructors.ToPagedList(pageNumber, pageSize);
 
         public Instructor GetById(int id)
         {

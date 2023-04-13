@@ -1,5 +1,4 @@
 ﻿using DataLayer.Repositories;
-using DataLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DataLayer.Contexts;
+using DataLayer.Models.Entities;
+using PagedList;
 
 namespace DataLayer.Services
 {
@@ -15,15 +16,9 @@ namespace DataLayer.Services
         private readonly LoliBase db;
         public CourseSectionRepository(LoliBase db) => this.db = db;
 
-        public IEnumerable<CourseSection> GetAll()
-        {
-            return db.CourseSections;
-        }
+        public IEnumerable<CourseSection> GetAll(int pageNumber, int pageSize) => db.CourseSections.ToPagedList(pageNumber, pageSize);
 
-        public CourseSection GetById(int id)
-        {
-            return db.CourseSections.Single(entity => entity.Id == id);
-        }
+        public CourseSection GetById(int id) => db.CourseSections.Single(entity => entity.Id == id);
 
         public CourseSection Insert(CourseSection entity)
         {
@@ -87,7 +82,7 @@ namespace DataLayer.Services
         public bool ExistsByIdAndTerm(int id, Term term) =>
             db.CourseSections.Any(entity => entity.Id == id && entity.Term == term);
 
-        public IEnumerable<CourseSection> FindAllByTermIdAndInstructorUsernameAndCourseTitle(int termId, string UserName, string courseTitle) =>
+        public IEnumerable<CourseSection> FindAllByTermIdAndInstructorUsernameAndCourseTitle(int termId, string UserName, string courseTitle, int pageNumber, int pageSize) =>
             db.CourseSections.Where(entity => entity.Term.Id == termId && entity.Instructor.UserName == UserName && entity.Course.Title == courseTitle);
 
         public IEnumerable<CourseSection> FindByInstructorId(int instructorId) =>

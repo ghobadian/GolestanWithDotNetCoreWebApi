@@ -1,6 +1,6 @@
 ﻿using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities.Users;
 
 namespace Golestan.Services.Interfaces;
 public interface IAdminService : ICrudService<AdminInputDto, AdminOutputDto>

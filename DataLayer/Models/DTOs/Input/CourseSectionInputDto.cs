@@ -1,5 +1,5 @@
 ﻿using DataLayer.Enums;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities.Users;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

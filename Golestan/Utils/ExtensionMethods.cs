@@ -1,6 +1,7 @@
-﻿using DataLayer.Models;
+﻿using DataLayer.Models.DTOs;
 using DataLayer.Models.DTOs.Output;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
 using Microsoft.CodeAnalysis.Scripting;
 
 namespace Golestan.Utils;

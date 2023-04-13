@@ -24,7 +24,8 @@ public class HandleExceptionsAttribute : ServiceFilterAttribute
 
             context.Result = new ContentResult
             {
-                Content = context.Exception.Message
+                StatusCode = 400,
+                Content = context.Exception.Message,//todo use regex to have dynamic status code
             };
         }
     }

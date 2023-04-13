@@ -1,10 +1,10 @@
-﻿using DataLayer.Models.Users;
+﻿using DataLayer.Models.Entities.Users;
 
 namespace DataLayer.Repositories;
 
 public interface ICrudRepository<T> : IDisposable
 {
-    IEnumerable<T> GetAll();
+    IEnumerable<T> GetAll(int pageNumber, int pageSize);//todo read from config
     T GetById(int id);
     T Insert(T entity);
     T Update(T entity);

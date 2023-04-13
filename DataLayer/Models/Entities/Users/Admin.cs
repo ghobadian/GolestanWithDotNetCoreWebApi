@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataLayer.Models.Users;
+namespace DataLayer.Models.Entities.Users;
 public class Admin : User
 {
 

@@ -1,7 +1,8 @@
 ﻿using DataLayer.Contexts;
-using DataLayer.Models;
+using DataLayer.Models.Entities;
 using DataLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
+using PagedList;
 
 namespace DataLayer.Services
 {
@@ -10,7 +11,7 @@ namespace DataLayer.Services
         private readonly LoliBase db;
         public CourseRepository(LoliBase db) => this.db = db;
 
-        public IEnumerable<Course> GetAll() => db.Courses;
+        public IEnumerable<Course> GetAll(int pageNumber, int pageSize) => db.Courses.ToPagedList(pageNumber, pageSize);
 
         public Course GetById(int id) => db.Courses.Single(entity => entity.Id == id);
 

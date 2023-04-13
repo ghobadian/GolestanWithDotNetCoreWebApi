@@ -1,7 +1,7 @@
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities.Users;
 using System.ComponentModel.DataAnnotations;
 
-namespace DataLayer.Models
+namespace DataLayer.Models.Entities
 {
     public class CourseSection
     {
@@ -12,6 +12,6 @@ namespace DataLayer.Models
         public virtual Course Course { get; set; }
 
         public virtual List<CourseSectionRegistration> CourseSectionRegistrations { get; set; }
-        
+
     }
 }

@@ -1,17 +1,19 @@
 ﻿using DataLayer.Models.DTOs.Input;
 using DataLayer.Models.DTOs.Output;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities.Users;
+using DataLayer.Services;
 using Golestan.Aspects.Authorize;
 using Golestan.Aspects.ExceptionHandling;
 using Golestan.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using PostSharp.Extensibility;
 
 namespace Golestan.Controllers;
 
 [ApiController]
 [Route("/[controller]/[action]")]
 [HandleExceptions]
-public class AdminController : ControllerBase
+public class AdminController : ControllerBase/*, ICrudController<AdminInputDto, AdminOutputDto>*/
 {
     public readonly IAdminService service;
 
@@ -21,23 +23,22 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet]
-    [AdminAuthorize]
-    public IEnumerable<AdminOutputDto> List([FromHeader] string token/*int page, *//*int number*/) => service.List(/*page, number*/);
+    [AdminAuthorize]//sorting filtering and pagination
+    public IEnumerable<AdminOutputDto> List([FromHeader] string token, int pageNumber = 1, int pageSize = 100) => service.List(pageNumber, pageSize);
 
     [HttpPost]
-    [AdminAuthorize]
-    public AdminOutputDto Create(AdminInputDto admin, [FromHeader] string token) => service.Create(admin);
+    public AdminOutputDto Create([FromBody] AdminInputDto dto, [FromHeader] string token) => service.Create(dto);
 
     [HttpGet("{id:int}")]
     [AdminAuthorize]
     public AdminOutputDto Read(int id, [FromHeader] string token) => service.Read(id);
 
     [HttpPut("{id:int}")]
-    [AdminAuthorize, SpecificAdminAuthorize]
+    [SpecificAdminAuthorize]
     public AdminOutputDto Update(int id, [FromBody] AdminInputDto admin, [FromHeader] string token) => service.Update(id, admin);
 
     [HttpDelete("{id:int}")]
-    [AdminAuthorize, SpecificAdminAuthorize]
+    [SpecificAdminAuthorize]
     public void Delete(int id, [FromHeader] string token) => service.Delete(id);
 
     [HttpPost]
@@ -45,14 +46,14 @@ public class AdminController : ControllerBase
 
     [HttpPost("{adminId:int}")]
     [AdminAuthorize]
-    public void ActivateAdmin(int adminId, string token) => service.ActivateAdmin(adminId);
+    public void ActivateAdmin(int adminId, [FromHeader] string token) => service.ActivateAdmin(adminId);
 
     [HttpPost("{instructorId:int}")]
     [AdminAuthorize]
-    public void ActivateInstructor(int instructorId, string token) => service.ActivateInstructor(instructorId);
+    public void ActivateInstructor(int instructorId, [FromHeader] string token) => service.ActivateInstructor(instructorId);
 
     [HttpPost("{studentId:int}")]
     [AdminAuthorize]
-    public void ActivateStudent(int studentId, string token) => service.ActivateStudent(studentId);
+    public void ActivateStudent(int studentId, [FromHeader] string token) => service.ActivateStudent(studentId);
 }
 
