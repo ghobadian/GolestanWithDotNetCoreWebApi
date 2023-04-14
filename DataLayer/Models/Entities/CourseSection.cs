@@ -1,17 +1,17 @@
 using DataLayer.Models.Entities.Users;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
-namespace DataLayer.Models.Entities
+namespace DataLayer.Models.Entities;
+
+public class CourseSection : Crud
 {
-    public class CourseSection
-    {
-        [Key]
-        public int Id { get; set; }
-        public virtual Term Term { get; set; }
-        public virtual Instructor Instructor { get; set; }
-        public virtual Course Course { get; set; }
+    public int TermForeignKey { get; set; }
+    public virtual Term Term { get; set; }
+    public int InstructorForeignKey { get; set; }
+    public virtual Instructor Instructor { get; set; }
+    public int CourseForeignKey{ get; set; }
+    public virtual Course Course { get; set; }
 
-        public virtual List<CourseSectionRegistration> CourseSectionRegistrations { get; set; }
+    public virtual List<CourseSectionRegistration> CourseSectionRegistrations { get; set; }
 
-    }
 }

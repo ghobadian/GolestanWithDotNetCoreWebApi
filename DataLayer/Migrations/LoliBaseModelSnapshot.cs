@@ -22,7 +22,7 @@ namespace DataLayer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DataLayer.Models.Course", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,7 +42,7 @@ namespace DataLayer.Migrations
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.CourseSection", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.CourseSection", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,27 +50,42 @@ namespace DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("CourseForeignKey")
                         .HasColumnType("int");
 
-                    b.Property<int>("InstructorId")
+                    b.Property<int?>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
+                    b.Property<int>("InstructorForeignKey")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("InstructorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TermForeignKey")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TermId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("InstructorForeignKey", "TermForeignKey", "CourseForeignKey");
+
+                    b.HasIndex("CourseForeignKey");
 
                     b.HasIndex("CourseId");
 
                     b.HasIndex("InstructorId");
 
-                    b.HasIndex("Id");
+                    b.HasIndex("TermForeignKey");
+
+                    b.HasIndex("TermId");
 
                     b.ToTable("CourseSections");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.CourseSectionRegistration", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.CourseSectionRegistration", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -96,7 +111,7 @@ namespace DataLayer.Migrations
                     b.ToTable("CourseSectionRegistrations");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.Term", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.Term", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,7 +131,7 @@ namespace DataLayer.Migrations
                     b.ToTable("Terms");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.Users.Admin", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.Users.Admin", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -152,7 +167,7 @@ namespace DataLayer.Migrations
                     b.ToTable("Admins");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.Users.Instructor", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.Users.Instructor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,7 +206,7 @@ namespace DataLayer.Migrations
                     b.ToTable("Instructors");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.Users.Student", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.Users.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -233,25 +248,37 @@ namespace DataLayer.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.CourseSection", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.CourseSection", b =>
                 {
-                    b.HasOne("DataLayer.Models.Course", "Course")
-                        .WithMany("CourseSections")
-                        .HasForeignKey("CourseId")
+                    b.HasOne("DataLayer.Models.Entities.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseForeignKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataLayer.Models.Users.Instructor", "Instructor")
+                    b.HasOne("DataLayer.Models.Entities.Course", null)
                         .WithMany("CourseSections")
-                        .HasForeignKey("InstructorId")
+                        .HasForeignKey("CourseId");
+
+                    b.HasOne("DataLayer.Models.Entities.Users.Instructor", "Instructor")
+                        .WithMany()
+                        .HasForeignKey("InstructorForeignKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataLayer.Models.Term", "Term")
+                    b.HasOne("DataLayer.Models.Entities.Users.Instructor", null)
                         .WithMany("CourseSections")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("InstructorId");
+
+                    b.HasOne("DataLayer.Models.Entities.Term", "Term")
+                        .WithMany()
+                        .HasForeignKey("TermForeignKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("DataLayer.Models.Entities.Term", null)
+                        .WithMany("CourseSections")
+                        .HasForeignKey("TermId");
 
                     b.Navigation("Course");
 
@@ -260,15 +287,15 @@ namespace DataLayer.Migrations
                     b.Navigation("Term");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.CourseSectionRegistration", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.CourseSectionRegistration", b =>
                 {
-                    b.HasOne("DataLayer.Models.CourseSection", "CourseSection")
+                    b.HasOne("DataLayer.Models.Entities.CourseSection", "CourseSection")
                         .WithMany("CourseSectionRegistrations")
                         .HasForeignKey("CourseSectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataLayer.Models.Users.Student", "Student")
+                    b.HasOne("DataLayer.Models.Entities.Users.Student", "Student")
                         .WithMany("CourseSectionRegistrations")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -279,27 +306,27 @@ namespace DataLayer.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.Course", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.Course", b =>
                 {
                     b.Navigation("CourseSections");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.CourseSection", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.CourseSection", b =>
                 {
                     b.Navigation("CourseSectionRegistrations");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.Term", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.Term", b =>
                 {
                     b.Navigation("CourseSections");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.Users.Instructor", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.Users.Instructor", b =>
                 {
                     b.Navigation("CourseSections");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.Users.Student", b =>
+            modelBuilder.Entity("DataLayer.Models.Entities.Users.Student", b =>
                 {
                     b.Navigation("CourseSectionRegistrations");
                 });

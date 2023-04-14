@@ -37,7 +37,7 @@ public class InstructorController : ControllerBase, ICrudController<InstructorIn
     public IEnumerable<InstructorOutputDto> List([FromHeader] string token, int pageNumber = 1, int pageSize = 100) => service.List(pageNumber, pageSize);
 
     [HttpPost]
-    public InstructorOutputDto Create([FromBody] InstructorInputDto dto, [FromHeader] string token) => service.Create(dto);
+    public InstructorOutputDto Create([FromBody] InstructorInputDto dto, [FromHeader] string? token) => service.Create(dto);
 
     [HttpGet("{id:int}")]
     [SpecificInstructorAuthorize]

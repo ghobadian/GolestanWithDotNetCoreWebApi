@@ -102,31 +102,50 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TermId = table.Column<int>(type: "int", nullable: false),
-                    InstructorId = table.Column<int>(type: "int", nullable: false),
-                    CourseId = table.Column<int>(type: "int", nullable: false)
+                    TermForeignKey = table.Column<int>(type: "int", nullable: false),
+                    InstructorForeignKey = table.Column<int>(type: "int", nullable: false),
+                    CourseForeignKey = table.Column<int>(type: "int", nullable: false),
+                    CourseId = table.Column<int>(type: "int", nullable: true),
+                    InstructorId = table.Column<int>(type: "int", nullable: true),
+                    TermId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CourseSections", x => x.Id);
+                    table.UniqueConstraint("AK_CourseSections_InstructorForeignKey_TermForeignKey_CourseForeignKey", x => new { x.InstructorForeignKey, x.TermForeignKey, x.CourseForeignKey });
+                    table.ForeignKey(
+                        name: "FK_CourseSections_Courses_CourseForeignKey",
+                        column: x => x.CourseForeignKey,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CourseSections_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CourseSections_Instructors_InstructorForeignKey",
+                        column: x => x.InstructorForeignKey,
+                        principalTable: "Instructors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CourseSections_Instructors_InstructorId",
                         column: x => x.InstructorId,
                         principalTable: "Instructors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CourseSections_Terms_TermForeignKey",
+                        column: x => x.TermForeignKey,
+                        principalTable: "Terms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CourseSections_Terms_TermId",
                         column: x => x.TermId,
                         principalTable: "Terms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -167,6 +186,11 @@ namespace DataLayer.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CourseSections_CourseForeignKey",
+                table: "CourseSections",
+                column: "CourseForeignKey");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CourseSections_CourseId",
                 table: "CourseSections",
                 column: "CourseId");
@@ -177,9 +201,14 @@ namespace DataLayer.Migrations
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CourseSections_TermForeignKey",
+                table: "CourseSections",
+                column: "TermForeignKey");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CourseSections_TermId",
                 table: "CourseSections",
-                column: "Id");
+                column: "TermId");
         }
 
         /// <inheritdoc />

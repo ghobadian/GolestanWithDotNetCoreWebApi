@@ -1,12 +1,12 @@
 using DataLayer.Contexts;
 using DataLayer.Enums;
 using DataLayer.Models.DTOs;
-using DataLayer.Models.Entities;
 using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Aspects.Authorize;
 using Golestan.Aspects.ExceptionHandling;
+using Golestan.Aspects.UserActivation;
 using Golestan.Services;
 using Golestan.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +63,15 @@ public class Program
         RepositoryDependencyInjection(builder);
         ServiceDependencyInjection(builder);
         AuthorizationDependencyInjection(builder);
+        UserExistenceDependencyInjection(builder);
         ExceptionHandlingInjection(builder);
+    }
+
+    private static void UserExistenceDependencyInjection(WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<AdminActivationAttribute.IAdminActivation, AdminActivationAttribute.AdminActivation>();
+        builder.Services.AddScoped<InstructorActivationAttribute.IInstructorActivation, InstructorActivationAttribute.InstructorActivation>();
+        builder.Services.AddScoped<StudentActivationAttribute.IStudentActivation, StudentActivationAttribute.StudentActivation>();
     }
 
     private static void ExceptionHandlingInjection(WebApplicationBuilder builder)
@@ -94,17 +102,19 @@ public class Program
 
     private static void RepositoryDependencyInjection(WebApplicationBuilder builder)
     {
-        //builder.Services.AddScoped<IAdminRepository, AdminRepository>();
         builder.Services.AddScoped<ICourseRepository, CourseRepository>();
         builder.Services.AddScoped<ICourseSectionRepository, CourseSectionRepository>();
         builder.Services.AddScoped<ICourseSectionRegistrationRepository, CourseSectionRegistrationRepository>();
-        //builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
-        builder.Services.AddScoped<IUserRepository<User>, StudentRepository>();
         builder.Services.AddScoped<ITermRepository, TermRepository>();
         builder.Services.AddScoped<IAbstractUserRepository, AbstractUserRepository>();
+
+        UserRepositoryDependencyInjection(builder);
+    }
+
+    private static void UserRepositoryDependencyInjection(WebApplicationBuilder builder)
+    {
         builder.Services.AddScoped<IUserRepository<Admin>, UserRepository<Admin>>();
         builder.Services.AddScoped<IUserRepository<Instructor>, UserRepository<Instructor>>();
         builder.Services.AddScoped<IUserRepository<Student>, UserRepository<Student>>();
-
     }
 }

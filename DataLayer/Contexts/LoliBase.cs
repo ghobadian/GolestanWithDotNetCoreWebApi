@@ -27,5 +27,23 @@ namespace DataLayer.Contexts
                 .HaveConversion<DateOnlyConverter>()
                 .HaveColumnType("date");
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CourseSection>()
+                .HasOne(p => p.Instructor)
+                .WithMany()
+                .HasForeignKey(p => p.InstructorForeignKey);
+            modelBuilder.Entity<CourseSection>()
+                .HasOne(p => p.Course)
+                .WithMany()
+                .HasForeignKey(p => p.CourseForeignKey);
+            modelBuilder.Entity<CourseSection>()
+                .HasOne(p => p.Term)
+                .WithMany()
+                .HasForeignKey(p => p.TermForeignKey);
+            modelBuilder.Entity<CourseSection>()
+                .HasAlternateKey(p => new {p.InstructorForeignKey, p.TermForeignKey, p.CourseForeignKey });
+        }
     }
 }

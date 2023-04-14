@@ -3,6 +3,7 @@ using DataLayer.Models.DTOs.Output;
 using DataLayer.Models.Entities;
 using DataLayer.Models.Entities.Users;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Golestan.Utils;
 
@@ -24,7 +25,7 @@ public static class ExtensionMethods//todo change its name. it's tooooooo genera
     public static CourseSectionOutputDto OutputDto(this CourseSection courseSection) => new(courseSection.Id,
         courseSection.Course.Title,
         courseSection.Course.Units, courseSection.Instructor.OutputDto(),
-        courseSection.CourseSectionRegistrations.Count);
+        courseSection.CourseSectionRegistrations.IsNullOrEmpty() ? 0 : courseSection.CourseSectionRegistrations.Count);
 
     public static CourseSectionRegistrationOutputDto OutputDto(this CourseSectionRegistration csr) => new(csr.Id,
         csr.Score, csr.CourseSection.OutputDto(), csr.Student.OutputDto());

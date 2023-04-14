@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Golestan.Services.Interfaces;
 public interface IStudentService : ICrudService<StudentInputDto, StudentOutputDto>
 {
-    CourseSectionRegistration SignUpSection(int courseSectionId, [FromHeader] string token);
+    CourseSectionRegistrationOutputDto SignUpSection(int courseSectionId, [FromHeader] string token);
     StudentAverageDto SeeScoresInSpecifiedTerm(int termId, [FromHeader] string token);
     SummeryDto SeeSummery(string token);
     TokenOutputDto Login(string username, string password);

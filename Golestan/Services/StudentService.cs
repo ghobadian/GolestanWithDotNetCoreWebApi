@@ -15,14 +15,14 @@ namespace Golestan.Services;
 
 public class StudentService : IStudentService {
     private readonly ICourseSectionRegistrationRepository csrRepository;
-    private readonly IUserRepository<User> studentRepository;
+    private readonly IUserRepository<Student> studentRepository;
     private readonly ITermRepository termRepository;
     private readonly ICourseSectionRepository courseSectionRepository;
     private readonly ICourseSectionRegistrationRepository courseSectionRegistrationRepository;
     private readonly IUserService userService;
 
     public StudentService(ICourseSectionRegistrationRepository csrRepository, 
-        IUserRepository<User> studentRepository, 
+        IUserRepository<Student> studentRepository, 
         ITermRepository termRepository, 
         ICourseSectionRepository courseSectionRepository, 
         ICourseSectionRegistrationRepository courseSectionRegistrationRepository, 
@@ -43,15 +43,15 @@ public class StudentService : IStudentService {
             Student = student,
             CourseSection = courseSection
         };
-        csrRepository.Insert(csr);
+        var insertedCsr = csrRepository.Insert(csr);
         csrRepository.Save();
-        return csr;
+        return insertedCsr;
     }
 
-    public CourseSectionRegistration SignUpSection(int courseSectionId, [FromHeader] string token)
+    public CourseSectionRegistrationOutputDto SignUpSection(int courseSectionId, [FromHeader] string token)
     {
         string username = TokenRepository.GetById(token).Username;
-        return SignUpSection(studentRepository.FindByUsername(username), courseSectionRepository.GetById(courseSectionId));
+        return SignUpSection(studentRepository.FindByUsername(username), courseSectionRepository.GetById(courseSectionId)).OutputDto();
     }
 
     public StudentAverageDto SeeScoresInSpecifiedTerm(int termId, [FromHeader] string token)

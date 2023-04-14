@@ -6,12 +6,11 @@ using PagedList;
 
 namespace DataLayer.Services;
 
-public class CrudRepository<T> : ICrudRepository<T> where T : class
+public class CrudRepository<T> : ICrudRepository<T> where T : Crud
 {
     private readonly LoliBase db;
 
-    private readonly DbSet<T> entities;
-    //private readonly UserRepository<Course> ;
+    protected readonly DbSet<T> entities;
     public CrudRepository(LoliBase db)
     {
         this.db = db;
@@ -20,16 +19,13 @@ public class CrudRepository<T> : ICrudRepository<T> where T : class
 
     public IEnumerable<T> GetAll(int pageNumber, int pageSize) => entities.ToPagedList(pageNumber, pageSize);
 
-    public Course GetById(int id) => entities.Single(entity => entity.Id == id);
-
-    public bool ExistsByTitle(string title)
-        => entities.Any(entity => entity.Title == title);
+    public T GetById(int id) => entities.Single(entity => entity.Id == id);
+    public bool ExistsById(int id) => entities.Any(entity => entity.Id == id);
 
     public void Dispose() => db.Dispose();
 
-    public Course Update(Course entity)
+    public T Update(T entity)
     {
-        if (entity == null) { return default; }
         try
         {
             db.Entry(entity).State = EntityState.Modified;
@@ -43,9 +39,8 @@ public class CrudRepository<T> : ICrudRepository<T> where T : class
 
     public bool Delete(int id) => Delete(GetById(id));
 
-    public bool Delete(Course entity)
+    public bool Delete(T entity)
     {
-        if (entity == null) return false;
         try
         {
             db.Entry(entity).State = EntityState.Deleted;
@@ -59,7 +54,7 @@ public class CrudRepository<T> : ICrudRepository<T> where T : class
 
     public void Save() => db.SaveChanges();
 
-    public Course Insert(Course entity)
+    public T Insert(T entity)
     {
         try
         {

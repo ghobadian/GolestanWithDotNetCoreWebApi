@@ -8,11 +8,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DataLayer.Models.Entities.Users
 {
-    public abstract class User
+    public abstract class User : Crud
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public string UserName { get; set; }
 

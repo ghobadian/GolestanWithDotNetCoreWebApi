@@ -2,10 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataLayer.Models.Entities
 {
-    public class Course
+    public class Course : Crud
     {
-        [Key]
-        public int Id { get; set; }
         [Required]
         public string Title { get; set; }
         [Required]

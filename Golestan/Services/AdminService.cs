@@ -15,7 +15,7 @@ public class AdminService : IAdminService
 {
     private readonly IUserRepository<Instructor> instructorRepository;
     private readonly IUserRepository<Admin> adminRepository;
-    private readonly IUserRepository<User> studentRepository;
+    private readonly IUserRepository<Student> studentRepository;
     private readonly IUserService userService;
     private readonly ILogger<AdminService> logger;
 
@@ -23,7 +23,7 @@ public class AdminService : IAdminService
     public AdminService(IUserRepository<Admin> adminRepository,
         IUserService userService, 
         IUserRepository<Instructor> instructorRepository, 
-        IUserRepository<User> studentRepository, ILogger<AdminService> logger)//todo
+        IUserRepository<Student> studentRepository, ILogger<AdminService> logger)//todo
     {
         this.adminRepository = adminRepository;
         this.userService = userService;
@@ -75,25 +75,11 @@ public class AdminService : IAdminService
         var admin = adminRepository.FindByUsername(username);
         if (admin.Password != PasswordEncoder.Encode(password)) throw new UsernameOrPasswordInvalidException();
         if (TokenRepository.ExistsByUsername(username)) throw new ReLoginException();
-
     }
 
-    public void ActivateAdmin(int adminId)
-    {
-        adminRepository.Update(new Admin() { Id = adminId, Active = true });
-        adminRepository.Save();
-    }
+    public void ActivateAdmin(int adminId) => adminRepository.Activate(adminId);
 
-    public void ActivateInstructor(int instructorId)
-    {
-        instructorRepository.Update(new Instructor() { Id = instructorId, Active = true });
-        instructorRepository.Save();
-    }
+    public void ActivateInstructor(int instructorId) => instructorRepository.Activate(instructorId);
 
-    public void ActivateStudent(int studentId)
-    {
-        studentRepository.Update(new Student() { Id = studentId, Active = true });
-        studentRepository.Save();
-    }
-
+    public void ActivateStudent(int studentId) => studentRepository.Activate(studentId);
 }

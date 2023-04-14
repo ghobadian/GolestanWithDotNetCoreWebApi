@@ -1,10 +1,9 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
 
 namespace DataLayer.Enums;
 
-[JsonConverter(typeof(StringEnumConverter))]
-public enum Degree
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum Degree//todo what if term was close
 {
     BS, MS, PHD
 }

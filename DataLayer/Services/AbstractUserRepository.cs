@@ -17,9 +17,11 @@ namespace DataLayer.Services
     {
         private readonly IUserRepository<Admin> _adminRepository;
         private readonly IUserRepository<Instructor> _instructorRepository;
-        private readonly IUserRepository<User> _studentRepository;
+        private readonly IUserRepository<Student> _studentRepository;
 
-        public AbstractUserRepository(IUserRepository<Admin> adminRepository, IUserRepository<Instructor> instructorRepository, IUserRepository<User> studentRepository)
+        public AbstractUserRepository(IUserRepository<Admin> adminRepository,
+            IUserRepository<Instructor> instructorRepository, 
+            IUserRepository<Student> studentRepository)
         {
             _adminRepository = adminRepository;
             _instructorRepository = instructorRepository;

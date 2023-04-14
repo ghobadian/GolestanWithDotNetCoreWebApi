@@ -1,5 +1,6 @@
 ﻿using DataLayer.Enums;
 using DataLayer.Models;
+using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using DataLayer.Services;
 using Golestan.Business.Exceptions;
@@ -24,9 +25,9 @@ public class SpecificStudentAuthorizeAttribute : ServiceFilterAttribute
 
     public class SpecificStudentAuthorize : ISpecificStudentAuthorize
     {
-        private readonly IUserRepository<User> studentRepository;
+        private readonly IUserRepository<Student> studentRepository;
 
-        public SpecificStudentAuthorize(IUserRepository<User> studentRepository) => this.studentRepository = studentRepository;
+        public SpecificStudentAuthorize(IUserRepository<Student> studentRepository) => this.studentRepository = studentRepository;
 
         [StudentAuthorize]
         public void OnActionExecuting(ActionExecutingContext context)

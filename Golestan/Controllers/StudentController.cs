@@ -26,7 +26,7 @@ public class StudentController : ControllerBase
 
     [HttpPost("{courseSectionId:int}")]
     [StudentAuthorize]
-    public CourseSectionRegistration SignUpSection(int courseSectionId, [FromHeader] string token) => service.SignUpSection(courseSectionId, token);//todo fix in service
+    public CourseSectionRegistrationOutputDto SignUpSection(int courseSectionId, [FromHeader] string token) => service.SignUpSection(courseSectionId, token);//todo fix in service
 
 
     [HttpGet("{termId:int}")]
@@ -46,7 +46,7 @@ public class StudentController : ControllerBase
     public IEnumerable<StudentOutputDto> List(int pageNumber, int pageSize, [FromHeader] string token) => service.List(pageNumber, pageSize);
 
     [HttpPost]
-    public StudentOutputDto Create([FromBody] StudentInputDto dto, [FromHeader] string token) => service.Create(dto);
+    public StudentOutputDto Create([FromBody] StudentInputDto dto, [FromHeader] string? token) => service.Create(dto);
 
     [HttpGet]
     [InstructorAuthorize]
