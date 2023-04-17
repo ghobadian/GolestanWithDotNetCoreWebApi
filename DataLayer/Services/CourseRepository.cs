@@ -1,6 +1,7 @@
 ﻿using DataLayer.Contexts;
 using DataLayer.Models.Entities;
 using DataLayer.Repositories;
+using PagedList;
 
 namespace DataLayer.Services
 {

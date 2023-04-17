@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataLayer.Migrations
 {
-    /// <inheritdoc />
     public partial class Initial : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -88,7 +86,7 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Open = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -102,9 +100,9 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TermForeignKey = table.Column<int>(type: "int", nullable: false),
-                    InstructorForeignKey = table.Column<int>(type: "int", nullable: false),
-                    CourseForeignKey = table.Column<int>(type: "int", nullable: false),
+                    Term = table.Column<int>(type: "int", nullable: false),
+                    Instructor = table.Column<int>(type: "int", nullable: false),
+                    Course = table.Column<int>(type: "int", nullable: false),
                     CourseId = table.Column<int>(type: "int", nullable: true),
                     InstructorId = table.Column<int>(type: "int", nullable: true),
                     TermId = table.Column<int>(type: "int", nullable: true)
@@ -112,35 +110,16 @@ namespace DataLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CourseSections", x => x.Id);
-                    table.UniqueConstraint("AK_CourseSections_InstructorForeignKey_TermForeignKey_CourseForeignKey", x => new { x.InstructorForeignKey, x.TermForeignKey, x.CourseForeignKey });
-                    table.ForeignKey(
-                        name: "FK_CourseSections_Courses_CourseForeignKey",
-                        column: x => x.CourseForeignKey,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CourseSections_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_CourseSections_Instructors_InstructorForeignKey",
-                        column: x => x.InstructorForeignKey,
-                        principalTable: "Instructors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_CourseSections_Instructors_InstructorId",
                         column: x => x.InstructorId,
                         principalTable: "Instructors",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_CourseSections_Terms_TermForeignKey",
-                        column: x => x.TermForeignKey,
-                        principalTable: "Terms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CourseSections_Terms_TermId",
                         column: x => x.TermId,
@@ -154,7 +133,7 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Score = table.Column<double>(type: "float", nullable: false),
+                    Score = table.Column<double>(type: "float", nullable: true),
                     CourseSectionId = table.Column<int>(type: "int", nullable: false),
                     StudentId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -176,9 +155,10 @@ namespace DataLayer.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CourseSectionRegistrations_CourseSectionId",
+                name: "IX_CourseSectionRegistrations_CourseSectionId_StudentId",
                 table: "CourseSectionRegistrations",
-                column: "CourseSectionId");
+                columns: new[] { "CourseSectionId", "StudentId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseSectionRegistrations_StudentId",
@@ -186,9 +166,10 @@ namespace DataLayer.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CourseSections_CourseForeignKey",
+                name: "IX_CourseSections_Course_Instructor_Term",
                 table: "CourseSections",
-                column: "CourseForeignKey");
+                columns: new[] { "Course", "Instructor", "Term" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseSections_CourseId",
@@ -201,17 +182,17 @@ namespace DataLayer.Migrations
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CourseSections_TermForeignKey",
-                table: "CourseSections",
-                column: "TermForeignKey");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_CourseSections_TermId",
                 table: "CourseSections",
                 column: "TermId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Terms_Title",
+                table: "Terms",
+                column: "Title",
+                unique: true);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

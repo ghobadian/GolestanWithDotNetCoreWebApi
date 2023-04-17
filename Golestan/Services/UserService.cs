@@ -1,7 +1,3 @@
-using DataLayer.Enums;
-using Microsoft.CodeAnalysis;
-using System.Runtime.InteropServices;
-using System;
 using System.Text.RegularExpressions;
 using DataLayer.Repositories;
 using Golestan.Services.Interfaces;
@@ -47,7 +43,7 @@ public class UserService : IUserService
 
     private void UpdateUsername(User user, string? newUsername)
     {
-        if (newUsername == null || abstractUserRepository.ExistsByUsername(user.UserName)) throw new Exception("Try another username");
+        if (newUsername == null || abstractUserRepository.ExistsByUsername(newUsername)) throw new Exception("Try another username");
         user.UserName = newUsername;
     }
 

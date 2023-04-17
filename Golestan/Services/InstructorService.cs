@@ -14,16 +14,22 @@ namespace Golestan.Services;
 public class InstructorService : IInstructorService 
 {
     private readonly IUserRepository<Instructor> instructorRepository;
+    private readonly IUserRepository<Student> studentRepository;
+    private readonly ICourseRepository courseRepository;
     private readonly ICourseSectionRegistrationRepository csrRepository;
     private readonly IUserService userService;
+    private readonly ICourseSectionRepository courseSectionRepository;
 
     public InstructorService(IUserRepository<Instructor> instructorRepository,
         ICourseSectionRegistrationRepository csrRepository,
-        IUserService userService)
+        IUserService userService, IUserRepository<Student> studentRepository, ICourseRepository courseRepository, ICourseSectionRepository courseSectionRepository)
     {
         this.instructorRepository = instructorRepository;
         this.csrRepository = csrRepository;
         this.userService = userService;
+        this.studentRepository = studentRepository;
+        this.courseRepository = courseRepository;
+        this.courseSectionRepository = courseSectionRepository;
     }
 
     public IEnumerable<InstructorOutputDto> List(int pageNumber, int pageSize) => instructorRepository.GetAll(pageNumber, pageSize).Select(instructor => instructor.OutputDto());
@@ -57,25 +63,31 @@ public class InstructorService : IInstructorService
     public void Delete(int instructorId)
     {
 
-        //List<CourseSection> courseSectionsOfInstructor = repo.findCourseSectionByInstructorId(instructorId);
+        //List<CourseSectionId> courseSectionsOfInstructor = repo.findCourseSectionByInstructorId(instructorId);
         //courseSectionsOfInstructor.forEach(service -> service.setInstructor(null));
         //todo test delete cascading 
         instructorRepository.Delete(instructorId);
         //log.info("Instructor with id " + instructorId + " Deleted");
     }
 
-    public CourseSectionRegistration GiveMark(int courseSectionId, int studentId, double score)
+    public CourseSectionRegistrationOutputDto GiveMark(int courseSectionId, int studentId, double score)
     {
+        CheckScore(score);
         var csr = csrRepository.FindByCourseSectionIdAndStudentId(courseSectionId, studentId);
         csr.Score = score;
         csrRepository.Update(csr);
         csrRepository.Save();
-        return csr;
+        return csr.OutputDto(instructorRepository, courseRepository, studentRepository, courseSectionRepository);
     }
 
-    public List<CourseSectionRegistration> GiveMultipleMarks(int courseSectionId, Dictionary<int, double> idsAndScoresJson) 
+    private static void CheckScore(double score)
     {
-        var response = new List<CourseSectionRegistration>();
+        if (score < 0 || score > 20) throw new Exception("Invalid Score");
+    }
+
+    public List<CourseSectionRegistrationOutputDto> GiveMultipleMarks(int courseSectionId, Dictionary<int, double> idsAndScoresJson) 
+    {
+        var response = new List<CourseSectionRegistrationOutputDto>();
         foreach (var (id, score) in idsAndScoresJson)
         {
             response.Add(GiveMark(courseSectionId, id, score));

@@ -8,9 +8,9 @@ namespace DataLayer.Services;
 
 public class CrudRepository<T> : ICrudRepository<T> where T : Crud
 {
-    private readonly LoliBase db;
+    protected readonly LoliBase db;
 
-    protected readonly DbSet<T> entities;
+    protected DbSet<T> entities;
     public CrudRepository(LoliBase db)
     {
         this.db = db;

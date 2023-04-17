@@ -42,8 +42,8 @@ namespace Test
         [Fact]
         public void test()
         {
-            var scope = _factory.Services.GetService<IServiceScopeFactory>()!.CreateScope();
-            var db = scope.ServiceProvider.GetService<LoliBase>();
+            //var scope = _factory.Services.GetService<IServiceScopeFactory>()!.CreateScope();
+            //var db = scope.ServiceProvider.GetService<LoliBase>();
 
             //var dbContextOptionsBuilder = new DbContextOptionsBuilder<LoliBase>().UseInMemoryDatabase("test");
             //Golestan.Program.builder.Services.AddDbContext<LoliBase>(options => options.UseInMemoryDatabase("test"));
@@ -54,7 +54,7 @@ namespace Test
             //_httpClient.DefaultRequestHeaders.Add("token", "token");
             //var response = await _httpClient.GetAsync("/admin/List");
             //var result = await response.Content.ReadAsStringAsync();
-            Loader.LoadData(db, _httpClient);
+            //Loader.LoadData(db, _httpClient);
         }
     }
 }

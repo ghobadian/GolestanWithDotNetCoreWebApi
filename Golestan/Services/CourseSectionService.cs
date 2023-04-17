@@ -16,13 +16,15 @@ public class CourseSectionService : ICourseSectionService
     private readonly ICourseSectionRegistrationRepository courseSectionRegistrationRepository;
     private readonly ITermRepository termRepository;
     private readonly IUserRepository<Instructor> instructorRepository;
+    private readonly IUserRepository<Student> studentRepository;
     private readonly ILogger<CourseSectionService> logger;
 
     public CourseSectionService(ICourseSectionRepository courseSectionRepository,
         ITermRepository termRepository, 
         ICourseSectionRegistrationRepository courseSectionRegistrationRepository, 
         ICourseRepository courseRepository, 
-        IUserRepository<Instructor> instructorRepository, ILogger<CourseSectionService> logger)
+        IUserRepository<Instructor> instructorRepository, 
+        ILogger<CourseSectionService> logger)
     {
         this.courseSectionRepository = courseSectionRepository;
         this.termRepository = termRepository;
@@ -32,8 +34,10 @@ public class CourseSectionService : ICourseSectionService
         this.logger = logger;
     }
 
-    public IEnumerable<CourseSectionOutputDto> List(int pageNumber, int pageSize) =>
-        courseSectionRepository.GetAll(pageNumber, pageSize).Select(cs => cs.OutputDto());
+    public IEnumerable<CourseSectionOutputDto> List(int pageNumber, int pageSize)
+    {
+        return courseSectionRepository.GetAll(pageNumber, pageSize).Select(cs => cs.OutputDto(instructorRepository, courseRepository));
+    }
 
     public IEnumerable<CourseSection> List(int termId, string instructorUsername, string courseTitle, int pageNumber, int pageSize) =>
         courseSectionRepository
@@ -41,21 +45,22 @@ public class CourseSectionService : ICourseSectionService
 
     public List<StudentScoreOutputDto> ListStudentsByCourseSection(int id, int pageNumber, int pageSize) => 
         courseSectionRegistrationRepository.FindByCourseSectionId(id)
-            .Select(GetStudentDetails).ToList();
+            .Select(csr => GetStudentDetails(csr, studentRepository)).ToList();
 
-    private static StudentScoreOutputDto GetStudentDetails(CourseSectionRegistration csr)
+    private static StudentScoreOutputDto GetStudentDetails(CourseSectionRegistration csr, IUserRepository<Student> studentRepository)
     {
-        var student = (StudentScoreOutputDto) csr.Student.OutputDto();
-        return  student with { Score = csr.Score };
+        var dto = studentRepository.GetById(csr.StudentId).OutputDto();//todo test casting again
+        return new StudentScoreOutputDto(dto.Id, dto.Username, dto.Name, dto.NationalId, dto.PhoneNumber, dto.Degree,
+            dto.StartDate, csr.Score);
     }
 
     public CourseSectionOutputDto Create(CourseSectionInputDto dto)
     {
         var courseSection = BuildCourseSection(dto.CourseId, dto.InstructorId, dto.TermId);
-        logger.LogInformation("CourseSection \" + courseSection + \"created");;
+        logger.LogInformation("CourseSectionId \" + courseSection + \"created");;
         var insertedCourseSection = courseSectionRepository.Insert(courseSection);
         courseSectionRepository.Save();
-        return insertedCourseSection.OutputDto();
+        return insertedCourseSection.OutputDto(instructorRepository, courseRepository);
     }
 
     private CourseSection BuildCourseSection(int courseId, int instructorId, int termId) => 
@@ -65,7 +70,7 @@ public class CourseSectionService : ICourseSectionService
             Term = termRepository.GetById(termId)
         };
 
-    public CourseSectionOutputDto Read(int id) => courseSectionRepository.GetById(id).OutputDto();
+    public CourseSectionOutputDto Read(int id) => courseSectionRepository.GetById(id).OutputDto(instructorRepository, courseRepository);
 
     public CourseSectionOutputDto Update(int id, CourseSectionInputDto dto)
     {
@@ -75,7 +80,7 @@ public class CourseSectionService : ICourseSectionService
         UpdateInstructor(dto.InstructorId, courseSection);
         courseSectionRepository.Update(courseSection);
         courseSectionRepository.Save();
-        return courseSection.OutputDto();
+        return courseSection.OutputDto(instructorRepository, courseRepository);
     }
 
     private void UpdateInstructor(int instructorId, CourseSection courseSection)
@@ -101,7 +106,7 @@ public class CourseSectionService : ICourseSectionService
 
     public void Delete(int id)
     {
-        logger.LogInformation("CourseSection \" + service + \" Deleted");
+        logger.LogInformation("CourseSectionId \" + service + \" Deleted");
         courseSectionRepository.Delete(id);
         courseSectionRepository.Save();
     }

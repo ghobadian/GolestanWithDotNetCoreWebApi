@@ -10,8 +10,8 @@ namespace Golestan.Services.Interfaces;
 
 public interface IInstructorService : ICrudService<InstructorInputDto, InstructorOutputDto>
 {
-    CourseSectionRegistration GiveMark(int courseSectionId, int studentId, double score);
-    List<CourseSectionRegistration> GiveMultipleMarks(int courseSectionId,
+    CourseSectionRegistrationOutputDto GiveMark(int courseSectionId, int studentId, double score);
+    List<CourseSectionRegistrationOutputDto> GiveMultipleMarks(int courseSectionId,
         Dictionary<int, double> idsAndScoresJson);
     TokenOutputDto Login(string username, string password);
 

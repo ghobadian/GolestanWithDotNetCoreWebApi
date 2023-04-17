@@ -16,17 +16,20 @@ namespace Golestan.Services;
 public class StudentService : IStudentService {
     private readonly ICourseSectionRegistrationRepository csrRepository;
     private readonly IUserRepository<Student> studentRepository;
+    private readonly IUserRepository<Instructor> instructorRepository;
     private readonly ITermRepository termRepository;
     private readonly ICourseSectionRepository courseSectionRepository;
     private readonly ICourseSectionRegistrationRepository courseSectionRegistrationRepository;
     private readonly IUserService userService;
+    private readonly ICourseRepository courseRepository;
 
     public StudentService(ICourseSectionRegistrationRepository csrRepository, 
         IUserRepository<Student> studentRepository, 
         ITermRepository termRepository, 
         ICourseSectionRepository courseSectionRepository, 
         ICourseSectionRegistrationRepository courseSectionRegistrationRepository, 
-        IUserService userService)
+        IUserService userService, 
+        IUserRepository<Instructor> instructorRepository, ICourseRepository courseRepository)
     {
         this.csrRepository = csrRepository;
         this.studentRepository = studentRepository;
@@ -34,14 +37,16 @@ public class StudentService : IStudentService {
         this.courseSectionRepository = courseSectionRepository;
         this.courseSectionRegistrationRepository = courseSectionRegistrationRepository;
         this.userService = userService;
+        this.instructorRepository = instructorRepository;
+        this.courseRepository = courseRepository;
     }
 
     private CourseSectionRegistration SignUpSection(Student student, CourseSection courseSection)
     {
         var csr = new CourseSectionRegistration
         {
-            Student = student,
-            CourseSection = courseSection
+            StudentId = student.Id,
+            CourseSectionId = courseSection.Id
         };
         var insertedCsr = csrRepository.Insert(csr);
         csrRepository.Save();
@@ -51,20 +56,36 @@ public class StudentService : IStudentService {
     public CourseSectionRegistrationOutputDto SignUpSection(int courseSectionId, [FromHeader] string token)
     {
         string username = TokenRepository.GetById(token).Username;
-        return SignUpSection(studentRepository.FindByUsername(username), courseSectionRepository.GetById(courseSectionId)).OutputDto();
+        return SignUpSection(studentRepository.FindByUsername(username),
+                courseSectionRepository.GetById(courseSectionId))
+            .OutputDto(instructorRepository, courseRepository, studentRepository, courseSectionRepository);
     }
 
     public StudentAverageDto SeeScoresInSpecifiedTerm(int termId, [FromHeader] string token)
     {
         string username = TokenRepository.GetById(token).Username;//todo
         var student = studentRepository.FindByUsername(username);
-        var courseSections = student.CourseSectionRegistrations
-            .Select(csr => csr.CourseSection)
-            .Where(cs => cs.Term.Id == termId)
-            .Select(cs => new CourseSectionOutputDto(cs.Id, cs.Course.Title, cs.Course.Units, cs.Instructor.OutputDto(),
-                cs.CourseSectionRegistrations.Count)).ToList();
+        var courseSections = FindCourseSectionsOfStudentByTermId(termId, student);
         var average = student.CourseSectionRegistrations.Average(csr => csr.Score);
-        return new StudentAverageDto(average, courseSections);
+        return new StudentAverageDto(average.Value, courseSections);
+    }
+
+    private List<CourseSectionsWithScoreOutputDto> FindCourseSectionsOfStudentByTermId(int termId, Student student)
+    {
+        List<CourseSectionsWithScoreOutputDto> outputs = new List<CourseSectionsWithScoreOutputDto>();
+        foreach (var csr in student.CourseSectionRegistrations)
+        {
+            var cs = courseSectionRepository.GetById(csr.CourseSectionId);
+            if (cs.Term.Id == termId)
+            {
+                var course = courseRepository.GetById(cs.Course.Id);
+                var instructor = instructorRepository.GetById(cs.Instructor.Id);
+                var dto = new CourseSectionOutputDto(cs.Id, course.Title, course.Units, instructor.OutputDto(),
+                    cs.CourseSectionRegistrations.Count);
+                outputs.Add(new CourseSectionsWithScoreOutputDto(dto, csr.Score!.Value));
+            }
+        }
+        return outputs;
     }
 
     public SummeryDto SeeSummery(string token)
@@ -88,7 +109,7 @@ public class StudentService : IStudentService {
 
     private double FindAverageByTerm(Term term, Student student) => 
         courseSectionRegistrationRepository.FindByStudentIdAndTermId(student.Id, term.Id)
-            .Average(csr => csr.Score);
+            .Average(csr => csr.Score).Value;
 
     public IEnumerable<StudentOutputDto> List(int pageNumber, int pageSize) => studentRepository.GetAll(pageNumber, pageSize).Select(student => student.OutputDto());
 
@@ -127,7 +148,7 @@ public class StudentService : IStudentService {
         //csrs.forEach(csr -> csr.setStudent(null));
         studentRepository.Delete(student);
         studentRepository.Save();
-        //log.info("Student with id " + student + " created");
+        //log.info("StudentId with id " + student + " created");
     }
 
     public TokenOutputDto Login(string username, string password)

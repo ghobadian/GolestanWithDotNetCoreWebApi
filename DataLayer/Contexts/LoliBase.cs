@@ -1,6 +1,6 @@
 ﻿using DataLayer.Models.Entities;
 using DataLayer.Models.Entities.Users;
-using Microsoft.AspNetCore.Identity;
+//using Microsoft.AspNetCore.Identity;//todo re
 using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.Contexts
@@ -30,20 +30,46 @@ namespace DataLayer.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            UniqueConstraint(modelBuilder);
+        }
+
+        private static void UniqueConstraint(ModelBuilder modelBuilder)
+        {
+            CourseSectionUniqueConstraints(modelBuilder);
+            CourseSectionRegistrationUniqueConstraints(modelBuilder);
+            modelBuilder.Entity<Term>().HasIndex(u => u.Title).IsUnique();
+        }
+
+        private static void CourseSectionRegistrationUniqueConstraints(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CourseSectionRegistration>()
+                .HasIndex(p => new
+                {
+                    CourseSection = p.CourseSectionId, Student = p.StudentId
+                }).IsUnique();
+        }
+
+        private static void CourseSectionUniqueConstraints(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<CourseSection>()
-                .HasOne(p => p.Instructor)
-                .WithMany()
-                .HasForeignKey(p => p.InstructorForeignKey);
+                .Property(cs => cs.Course)
+                .HasConversion(t => t.Id, id => new Course() { Id = id });
+
             modelBuilder.Entity<CourseSection>()
-                .HasOne(p => p.Course)
-                .WithMany()
-                .HasForeignKey(p => p.CourseForeignKey);
+                .Property(cs => cs.Instructor)
+                .HasConversion(t => t.Id, id => new Instructor() { Id = id });
+
             modelBuilder.Entity<CourseSection>()
-                .HasOne(p => p.Term)
-                .WithMany()
-                .HasForeignKey(p => p.TermForeignKey);
+                .Property(cs => cs.Term)
+                .HasConversion(t => t.Id, id => new Term() { Id = id });
+
             modelBuilder.Entity<CourseSection>()
-                .HasAlternateKey(p => new {p.InstructorForeignKey, p.TermForeignKey, p.CourseForeignKey });
+                .HasIndex(p => new
+                {
+                    p.Course,
+                    p.Instructor,
+                    p.Term
+                }).IsUnique();
         }
     }
 }

@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace DataLayer.Models.DTOs.Output;
 
-public record StudentAverageDto(double Average, List<CourseSectionOutputDto> CourseSections);
+public record StudentAverageDto(double Average, List<CourseSectionsWithScoreOutputDto> CourseSections);
 

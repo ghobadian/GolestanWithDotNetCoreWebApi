@@ -28,7 +28,9 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddDbContext<LoliBase>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("Lolita")));
+            options
+                .UseLazyLoadingProxies()
+                .UseSqlServer(builder.Configuration.GetConnectionString("Lolita")));
         DependencyInjection(builder);
 
         var app = builder.Build();
@@ -42,7 +44,9 @@ public class Program
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                 //c.RoutePrefix = "";
             });
-            TokenRepository.Insert(new Token("token", DateTime.MaxValue, Role.ADMIN, "admin"));
+            TokenRepository.Insert(new Token("admin-token", DateTime.MaxValue, Role.ADMIN, "admin"));
+            TokenRepository.Insert(new Token("student-token", DateTime.MaxValue, Role.STUDENT, "Student1"));
+            TokenRepository.Insert(new Token("instructor-token", DateTime.MaxValue, Role.INSTRUCTOR, "Instructor1"));
         }
 
         app.UseHttpsRedirection();

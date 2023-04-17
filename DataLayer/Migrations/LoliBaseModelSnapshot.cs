@@ -17,10 +17,10 @@ namespace DataLayer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "6.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("DataLayer.Models.Entities.Course", b =>
                 {
@@ -28,7 +28,7 @@ namespace DataLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -48,21 +48,21 @@ namespace DataLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CourseForeignKey")
+                    b.Property<int>("Course")
                         .HasColumnType("int");
 
                     b.Property<int?>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<int>("InstructorForeignKey")
+                    b.Property<int>("Instructor")
                         .HasColumnType("int");
 
                     b.Property<int?>("InstructorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TermForeignKey")
+                    b.Property<int>("Term")
                         .HasColumnType("int");
 
                     b.Property<int?>("TermId")
@@ -70,17 +70,14 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("InstructorForeignKey", "TermForeignKey", "CourseForeignKey");
-
-                    b.HasIndex("CourseForeignKey");
-
                     b.HasIndex("CourseId");
 
                     b.HasIndex("InstructorId");
 
-                    b.HasIndex("TermForeignKey");
-
                     b.HasIndex("TermId");
+
+                    b.HasIndex("Course", "Instructor", "Term")
+                        .IsUnique();
 
                     b.ToTable("CourseSections");
                 });
@@ -91,12 +88,12 @@ namespace DataLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("CourseSectionId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Score")
+                    b.Property<double?>("Score")
                         .HasColumnType("float");
 
                     b.Property<int>("StudentId")
@@ -104,9 +101,10 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseSectionId");
-
                     b.HasIndex("StudentId");
+
+                    b.HasIndex("CourseSectionId", "StudentId")
+                        .IsUnique();
 
                     b.ToTable("CourseSectionRegistrations");
                 });
@@ -117,16 +115,19 @@ namespace DataLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<bool>("Open")
                         .HasColumnType("bit");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Title")
+                        .IsUnique();
 
                     b.ToTable("Terms");
                 });
@@ -137,7 +138,7 @@ namespace DataLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
@@ -173,7 +174,7 @@ namespace DataLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
@@ -212,7 +213,7 @@ namespace DataLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
@@ -250,60 +251,32 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("DataLayer.Models.Entities.CourseSection", b =>
                 {
-                    b.HasOne("DataLayer.Models.Entities.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseForeignKey")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DataLayer.Models.Entities.Course", null)
                         .WithMany("CourseSections")
                         .HasForeignKey("CourseId");
-
-                    b.HasOne("DataLayer.Models.Entities.Users.Instructor", "Instructor")
-                        .WithMany()
-                        .HasForeignKey("InstructorForeignKey")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("DataLayer.Models.Entities.Users.Instructor", null)
                         .WithMany("CourseSections")
                         .HasForeignKey("InstructorId");
 
-                    b.HasOne("DataLayer.Models.Entities.Term", "Term")
-                        .WithMany()
-                        .HasForeignKey("TermForeignKey")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DataLayer.Models.Entities.Term", null)
                         .WithMany("CourseSections")
                         .HasForeignKey("TermId");
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Instructor");
-
-                    b.Navigation("Term");
                 });
 
             modelBuilder.Entity("DataLayer.Models.Entities.CourseSectionRegistration", b =>
                 {
-                    b.HasOne("DataLayer.Models.Entities.CourseSection", "CourseSection")
+                    b.HasOne("DataLayer.Models.Entities.CourseSection", null)
                         .WithMany("CourseSectionRegistrations")
                         .HasForeignKey("CourseSectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataLayer.Models.Entities.Users.Student", "Student")
+                    b.HasOne("DataLayer.Models.Entities.Users.Student", null)
                         .WithMany("CourseSectionRegistrations")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CourseSection");
-
-                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("DataLayer.Models.Entities.Course", b =>

@@ -32,7 +32,7 @@ public class StudentActivationAttribute : ServiceFilterAttribute
         {
             var id = (int)context.ActionArguments["studentId"];
             if (!studentRepository.ExistsById(id))
-                throw new Exception("Student with this id does not exist");
+                throw new Exception("StudentId with this id does not exist");
             if (studentRepository.GetById(id).Active) throw new Exception("user is already active");
         }
 

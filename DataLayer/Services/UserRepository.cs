@@ -1,4 +1,5 @@
-﻿using DataLayer.Contexts;
+﻿using System.Linq.Expressions;
+using DataLayer.Contexts;
 using DataLayer.Models.Entities.Users;
 using DataLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +20,8 @@ public class UserRepository<T> : IUserRepository<T> where T : User, new()
 
     public void Activate(int id)
     {
-        T user = new T() { Id = id, Active = true};
-        db.Entry(user).Property(x => x.Active).IsModified = true;
-        users.Attach(user);
-        db.Entry(user).Property(x => x.Active).IsModified = true;
+        var user = users.Find(id);
+        user.Active = true;
         Save();
     }
 
@@ -76,6 +75,10 @@ public class UserRepository<T> : IUserRepository<T> where T : User, new()
     }
 
     public IEnumerable<T> GetAll(int pageNumber, int pageSize) => users.ToPagedList(pageNumber, pageSize);
+    public IEnumerable<T> GetAll(Expression<Func<T, object>>? includeProperties, int pageNumber, int pageSize)
+    {
+        throw new NotImplementedException();//todo
+    }
 
     public T GetById(int id) => users.Single(entity => entity.Id == id);
 

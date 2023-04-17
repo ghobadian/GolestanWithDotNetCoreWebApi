@@ -1,14 +1,15 @@
 using DataLayer.Models.Entities.Users;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataLayer.Models.Entities;
 
 public class CourseSectionRegistration : Crud
 {
-    public double Score { get; set; }
+    public double? Score { get; set; }
 
     [Required]
-    public virtual CourseSection CourseSection { get; set; }
+    public int CourseSectionId { get; set; }
     [Required]
-    public virtual Student Student { get; set; }
+    public int StudentId { get; set; }
 }

@@ -6,6 +6,7 @@ using Golestan.Aspects.Authorize;
 using Golestan.Aspects.ExceptionHandling;
 using Golestan.Services;
 using Golestan.Services.Interfaces;
+using Golestan.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Golestan.Controllers;
@@ -20,13 +21,13 @@ public class InstructorController : ControllerBase, ICrudController<InstructorIn
     public InstructorController(IInstructorService service) => this.service = service;
 
     [HttpPost("{courseSectionId:int}/{studentId:int}/{score:double}")]
-    
-    public CourseSectionRegistration GiveMark(int courseSectionId, int studentId, double score, [FromHeader] string token) => 
+    [SpecificInstructorAuthorize]
+    public CourseSectionRegistrationOutputDto GiveMark(int courseSectionId, int studentId, double score, [FromHeader] string token) => 
         service.GiveMark(courseSectionId, studentId, score);
 
     [HttpPost("{courseSectionId:int}")]
     [SpecificInstructorAuthorize]
-    public List<CourseSectionRegistration> GiveMultipleMarks(int courseSectionId, [FromBody] Dictionary<int, double> idsAndScores, [FromHeader] string token) => 
+    public IEnumerable<CourseSectionRegistrationOutputDto> GiveMultipleMarks(int courseSectionId, [FromBody] Dictionary<int, double> idsAndScores, [FromHeader] string token) => 
         service.GiveMultipleMarks(courseSectionId, idsAndScores);
 
     [HttpPost]

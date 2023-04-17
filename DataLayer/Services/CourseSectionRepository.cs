@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper.Configuration.Conventions;
 using Microsoft.EntityFrameworkCore;
 using DataLayer.Contexts;
 using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
 using PagedList;
 
 namespace DataLayer.Services
@@ -14,6 +16,8 @@ namespace DataLayer.Services
     public class CourseSectionRepository : CrudRepository<CourseSection>, ICourseSectionRepository
     {
         public CourseSectionRepository(LoliBase db) : base(db) {}
+
+        public new IEnumerable<CourseSection> GetAll(int pageNumber, int pageSize) => entities.ToPagedList(pageNumber, pageSize);
 
         public IEnumerable<CourseSection> FindByTerm(Term term) =>
             entities.Where(entity => entity.Term == term);

@@ -43,7 +43,7 @@ public class StudentController : ControllerBase
 
     [HttpGet]
     [InstructorAuthorize]
-    public IEnumerable<StudentOutputDto> List(int pageNumber, int pageSize, [FromHeader] string token) => service.List(pageNumber, pageSize);
+    public IEnumerable<StudentOutputDto> List([FromHeader] string token, int pageNumber = 1, int pageSize = 100) => service.List(pageNumber, pageSize);
 
     [HttpPost]
     public StudentOutputDto Create([FromBody] StudentInputDto dto, [FromHeader] string? token) => service.Create(dto);

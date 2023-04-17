@@ -29,7 +29,7 @@ public class CourseSectionController : ControllerBase, ICrudController<CourseSec
 
     [HttpGet("{termId:int}")]
     [StudentAuthorize]
-    public IEnumerable<CourseSection> List(int termId, string instructorUsername, string courseTitle, int pageNumber, int pageSize, [FromHeader] string token) =>
+    public IEnumerable<CourseSection> List(int termId, string instructorUsername, string courseTitle, [FromHeader] string token, int pageNumber = 1, int pageSize = 100) =>
         service.List(termId, instructorUsername, courseTitle, pageNumber, pageSize);
 
     [HttpGet("{courseSectionId:int}")]
