@@ -1,57 +1,92 @@
-﻿using DataLayer.Repositories;
-using DataLayer.Models.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using DataLayer.Contexts;
+using DataLayer.Models.Entities.Users;
+using DataLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
-using DataLayer.Models;
-using System.Runtime.InteropServices;
+using PagedList;
 
-namespace DataLayer.Services
+namespace DataLayer.Services;
+
+public class UserRepository<T> : IUserRepository<T> where T : User, new()
 {
-    public class UserRepository : AllInOneRepository<User>
+    private LoliBase db;
+    private DbSet<T> users;
+
+    public UserRepository(LoliBase db)
     {
-        public UserRepository(LoliBase db) : base(db) { }
-
-        public override IEnumerable<User> GetAll()
-        {
-            return db.Users;
-        }
-
-        public override User GetById(int id)
-        {
-            return db.Users.Single(entity => entity.Id == id);
-        }
-
-        public override bool Insert(User entity)
-        {
-            try
-            {
-                db.Users.Add(entity);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        User FindByUsername(string username) => db.Users.Single(user => user.Username == username); 
-
-        User FindByStudentId(int studentId) => db.Users.Single(user => user.Student.Id == studentId);
-
-        public User FindByInstructorId(int instructorId) => db.Users.Single(user => user.Instructor.Id == instructorId);
-        public IEnumerable<User> FindByAdminTrue() => db.Users.Where(user => user.Admin);
-
-        public bool ExistsByInstructorId(int instructorId) => db.Users.Any(user => user.Instructor.Id == instructorId);
-
-        public bool ExistsByPhone(string phone) => db.Users.Any(user => user.Phone == phone);
-
-        public bool ExistsByUsername(string username) => db.Users.Any(user => user.Username.Equals(username));
-
-        public bool ExistsByNationalId(string nationalId) => db.Users.Any(user => user.NationalId.Equals(nationalId));
+        this.db = db;
+        users = db.Set<T>();
     }
+
+    public void Activate(int id)
+    {
+        var user = users.Find(id);
+        user.Active = true;
+        Save();
+    }
+
+    public void Save()
+    {
+        db.SaveChanges();
+    }
+
+    public T Insert(T user)
+    {
+        try
+        {
+            users.Add(user);
+            return user;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    public T Update(T user)
+    {
+        try
+        {
+            db.Entry(user).State = EntityState.Modified;
+            return user;
+        }
+        catch (Exception)
+        {
+            return default;
+        }
+    }
+
+    public bool Delete(int id)
+    {
+        return Delete(GetById(id));
+    }
+
+    public bool Delete(T user)
+    {
+        try
+        {
+            db.Entry(user).State = EntityState.Deleted;
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    public IEnumerable<T> GetAll(int pageNumber, int pageSize) => users.ToPagedList(pageNumber, pageSize);
+    public IEnumerable<T> GetAll(Expression<Func<T, object>>? includeProperties, int pageNumber, int pageSize)
+    {
+        throw new NotImplementedException();//todo
+    }
+
+    public T GetById(int id) => users.Single(entity => entity.Id == id);
+
+    public bool ExistsByNationalId(string nationalId) => users.Any(user => user.NationalId == nationalId);
+
+    public T FindByUsername(string username) => users.Single(user => user.UserName == username);
+    public bool ExistsByUsername(string username) => users.Any(user => user.UserName == username);
+    public bool ExistsById(int id) => users.Any(user => user.Id == id);
+    public bool ExistsByPhone(string phone) => users.Any(user => user.PhoneNumber == phone);
+    public void Dispose() => db.Dispose();
 }

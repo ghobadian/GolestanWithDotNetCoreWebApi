@@ -1,7 +1,10 @@
-namespace DataLayer.Enums
+using System.Text.Json.Serialization;
+
+namespace DataLayer.Enums;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum Degree//todo what if term was close
 {
-    public enum Degree
-    {
-        BS, MS, PHD
-    }
+    BS, MS, PHD
 }
+

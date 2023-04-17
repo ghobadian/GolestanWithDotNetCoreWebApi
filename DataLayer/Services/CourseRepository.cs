@@ -1,38 +1,17 @@
 ﻿using DataLayer.Contexts;
-using DataLayer.Models;
+using DataLayer.Models.Entities;
+using DataLayer.Repositories;
+using PagedList;
 
 namespace DataLayer.Services
 {
-    public class CourseRepository : AllInOneRepository<Course>
+    public class CourseRepository : CrudRepository<Course>, ICourseRepository
     {
-        public CourseRepository(LoliBase db) : base(db) { }
-
-        public override IEnumerable<Course> GetAll()
+        public CourseRepository(LoliBase db) : base(db)
         {
-            return db.Courses;
         }
 
-        public override Course GetById(int id)
-        {
-            return db.Courses.Single(entity => entity.Id == id);
-        }
-
-        public override bool Insert(Course entity)
-        {
-            try
-            {
-                db.Courses.Add(entity);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public bool ExistsByTitle(string title)
-        {
-            return db.Courses.Any(entity => entity.Title == title);
-        }
+        public bool ExistsByTitle(string title) => entities.Any(course => course.Title == title);
+        
     }
 }

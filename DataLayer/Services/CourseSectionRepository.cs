@@ -1,52 +1,34 @@
 ﻿using DataLayer.Repositories;
-using DataLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper.Configuration.Conventions;
 using Microsoft.EntityFrameworkCore;
 using DataLayer.Contexts;
+using DataLayer.Models.Entities;
+using DataLayer.Models.Entities.Users;
+using PagedList;
 
 namespace DataLayer.Services
 {
-    public class CourseSectionRepository : AllInOneRepository<CourseSection>
+    public class CourseSectionRepository : CrudRepository<CourseSection>, ICourseSectionRepository
     {
-        public CourseSectionRepository(LoliBase db) : base(db) { }
+        public CourseSectionRepository(LoliBase db) : base(db) {}
 
-        public override IEnumerable<CourseSection> GetAll()
-        {
-            return db.CourseSections;
-        }
+        public new IEnumerable<CourseSection> GetAll(int pageNumber, int pageSize) => entities.ToPagedList(pageNumber, pageSize);
 
-        public override CourseSection GetById(int id)
-        {
-            return db.CourseSections.Single(entity => entity.Id == id);
-        }
+        public IEnumerable<CourseSection> FindByTerm(Term term) =>
+            entities.Where(entity => entity.Term == term);
 
-        public override bool Insert(CourseSection entity)
-        {
-            try
-            {
-                db.CourseSections.Add(entity);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
+        public bool ExistsByIdAndTerm(int id, Term term) =>
+            entities.Any(entity => entity.Id == id && entity.Term == term);
 
-        public IEnumerable<CourseSection> FindByTerm(Term term) => 
-            db.CourseSections.Where(entity => entity.Term == term);
+        public IEnumerable<CourseSection> FindAllByTermIdAndInstructorUsernameAndCourseTitle(int termId, string UserName, string courseTitle, int pageNumber, int pageSize) =>
+            entities.Where(entity => entity.Term.Id == termId && entity.Instructor.UserName == UserName && entity.Course.Title == courseTitle);
 
-        public bool ExistsByIdAndTerm(int id, Term term) => 
-            db.CourseSections.Any(entity => entity.Id == id && entity.Term == term);
-
-        public IEnumerable<CourseSection> FindAllByTermAndInstructorUsernameAndCourseTitle(Term term, string username, string courseTitle) =>
-            db.CourseSections.Where(entity => entity.Term == term && entity.Instructor.User.Username == username && entity.Course.Title == courseTitle);
-        
-        public IEnumerable<CourseSection> FindByInstructorId(int instructorId) => 
-            db.CourseSections.Where(entity => entity.Instructor.Id == instructorId);
+        public IEnumerable<CourseSection> FindByInstructorId(int instructorId) =>
+            entities.Where(entity => entity.Instructor.Id == instructorId);
     }
 }

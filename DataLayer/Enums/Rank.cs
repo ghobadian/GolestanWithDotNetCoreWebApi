@@ -1,9 +1,9 @@
-namespace DataLayer.Enums
+using System.Text.Json.Serialization;
+
+namespace DataLayer.Enums;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum Rank
 {
-    public enum Rank
-    {
-        ASSISTANT, ASSOCIATE, FULL
-    }
+    ASSISTANT, ASSOCIATE, FULL
 }
-
-

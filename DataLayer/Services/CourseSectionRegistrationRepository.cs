@@ -1,5 +1,4 @@
 ﻿using DataLayer.Repositories;
-using DataLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,52 +6,59 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DataLayer.Contexts;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities.Users;
+using DataLayer.Models.Entities;
+using PagedList;
+using System.Runtime.ConstrainedExecution;
 
 namespace DataLayer.Services
 {
-    public class CourseSectionRegistrationRepository : AllInOneRepository<CourseSectionRegistration>
+    public class CourseSectionRegistrationRepository : CrudRepository<CourseSectionRegistration>, ICourseSectionRegistrationRepository
     {
-        public CourseSectionRegistrationRepository(LoliBase db) : base(db) { }
-
-        public override IEnumerable<CourseSectionRegistration> GetAll()
+        private readonly ICourseSectionRepository courseSectionRepository;
+        public CourseSectionRegistrationRepository(LoliBase db, ICourseSectionRepository courseSectionRepository) : base(db)
         {
-            return db.CourseSectionRegistrations;
+            this.courseSectionRepository = courseSectionRepository;
         }
 
-        public override CourseSectionRegistration GetById(int id)
-        {
-            return db.CourseSectionRegistrations.Single(entity => entity.Id == id);
-        }
+        public CourseSectionRegistration FindByCourseSectionIdAndStudentId(int courseSectionId, int studentId) =>
+            entities.Single(csr => csr.CourseSectionId == courseSectionId && csr.StudentId == studentId);
 
-        public override bool Insert(CourseSectionRegistration entity)
-        {
-            try
-            {
-                db.CourseSectionRegistrations.Add(entity);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-        
-        public CourseSectionRegistration FindByCourseSectionIdAndStudentId(int courseSectionId, int studentId)
-        {
-            return db.CourseSectionRegistrations.Single(csr => csr.CourseSection.Id == courseSectionId && csr.Student.Id == studentId);
-        }
 
-        public bool ExistsByCourseSectionIdAndStudentId(int courseSectionId, int studentId) => 
-            db.CourseSectionRegistrations
-            .Any(csr => csr.CourseSection.Id == courseSectionId && csr.Student.Id == studentId);
+        public bool ExistsByCourseSectionIdAndStudentId(int courseSectionId, int studentId) => entities.Any(csr =>
+            csr.CourseSectionId == courseSectionId && csr.StudentId == studentId);
 
-        public IEnumerable<CourseSectionRegistration> FindByStudent(Student student) => 
-            db.CourseSectionRegistrations.Where(csr => csr.Student.Equals(student));
+        public IEnumerable<CourseSectionRegistration> FindByStudent(Student student) =>
+            entities.Where(csr => csr.StudentId.Equals(student));
 
-        public int CountByCourseSectionId(int courseSectionId) => 
+        public int CountByCourseSectionId(int courseSectionId) =>
             FindByCourseSectionId(courseSectionId).Count();
         public IEnumerable<CourseSectionRegistration> FindByCourseSectionId(int courseSectionId) =>
-            db.CourseSectionRegistrations.Where(csr => csr.CourseSection.Id == courseSectionId);
+            entities.Where(csr => csr.CourseSectionId == courseSectionId);
+
+        public IEnumerable<CourseSectionRegistration> FindByStudentIdAndTermId(int studentId, int termId)
+        {
+            var courseSectionRegistrations = entities.Where(csr => csr.StudentId == studentId);
+            List<CourseSectionRegistration> outputs = new List<CourseSectionRegistration>();
+            foreach (var courseSectionRegistration in courseSectionRegistrations)
+            {
+                var courseSection = courseSectionRepository.GetById(courseSectionRegistration.CourseSectionId);
+                if (courseSection.Term.Id == termId)
+                {
+                    outputs.Add(courseSectionRegistration);
+                }
+            }
+            return outputs;
+            //var results = courseSectionRegistrations
+            //    .Join(db.CourseSections,
+            //        registration => registration.CourseSectionId,
+            //        section => section.Instructor.Id, (registration, section) => new
+            //        {
+            //            CourseSectionRegistration = registration,
+            //            TermId = section.Term.Id
+            //        });
+            //var resultsFilterdByTermId = results.Where(jointResult => jointResult.TermId == termId);
+        }
+
     }
 }

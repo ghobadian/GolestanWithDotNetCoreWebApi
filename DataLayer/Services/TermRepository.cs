@@ -1,43 +1,17 @@
 ﻿using DataLayer.Repositories;
-using DataLayer.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DataLayer.Contexts;
-using DataLayer.Models.Users;
+using DataLayer.Models.Entities;
+using PagedList;
 
-namespace DataLayer.Services
+namespace DataLayer.Services;
+
+public class TermRepository : CrudRepository<Term>, ITermRepository
 {
-    public class TermRepository : AllInOneRepository<Term>
-    {
-        public TermRepository(LoliBase db) : base(db) { }
+    public TermRepository(LoliBase db) : base(db) {}
 
-        public override IEnumerable<Term> GetAll()
-        {
-            return db.Terms;
-        }
+    public IEnumerable<Term> GetAll() => entities;
 
-        public override Term GetById(int id)
-        {
-            return db.Terms.Single(entity => entity.Id == id);
-        }
-
-        public override bool Insert(Term entity)
-        {
-            try
-            {
-                db.Terms.Add(entity);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public bool ExistsByTitle(string title) => db.Terms.Any(entity => entity.Title == title);
-    }
+    public bool ExistsByTitle(string title) => entities.Any(term => term.Title == title);
 }
+

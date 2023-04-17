@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Golestan", "Golestan\Golestan.csproj", "{C6912A2D-B6C7-4D33-843D-6472E475C232}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Golestan", "Golestan\Golestan.csproj", "{C6912A2D-B6C7-4D33-843D-6472E475C232}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\DataLayer.csproj", "{B57C53A5-7FC8-447C-8EE8-0C8F19865F54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataLayer", "DataLayer\DataLayer.csproj", "{B57C53A5-7FC8-447C-8EE8-0C8F19865F54}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{FFD5F20E-E28B-4592-B7FD-BA5C7C9826F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{B57C53A5-7FC8-447C-8EE8-0C8F19865F54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B57C53A5-7FC8-447C-8EE8-0C8F19865F54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B57C53A5-7FC8-447C-8EE8-0C8F19865F54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFD5F20E-E28B-4592-B7FD-BA5C7C9826F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFD5F20E-E28B-4592-B7FD-BA5C7C9826F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFD5F20E-E28B-4592-B7FD-BA5C7C9826F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFD5F20E-E28B-4592-B7FD-BA5C7C9826F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
